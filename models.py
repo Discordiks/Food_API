@@ -8,13 +8,6 @@ from sqlalchemy.sql import func
 
 from database import Base
 
-Ingredients_recipes=Table('ingredient_recipe', Base.metadata, #таблица, связывающая ингредиенты и рецепты
-               Column('id', Integer, primary_key=True),           
-               Column('id_ingredient', ForeignKey('ingredients.id'), nullable=False, default=1),
-               Column('id_recipe', ForeignKey('recipes.id'), nullable=False, default=1),
-               Column('count', Integer, nullable=False, default=1),
-               Column('id_system_of_calc', ForeignKey('system_of_calculations.id'), nullable=False, default=1))
-
 Mealtime_recipes=Table('mealtime_recipe', Base.metadata, #таблица, связывающая время приготовления еды и рецепты
                Column('id', Integer, primary_key=True),           
                Column('id_mealtime', ForeignKey('mealtimes.id'), nullable=False, default=1),
@@ -60,14 +53,19 @@ class Recipe(Base): #рецепты
 
     user=relationship("User", backref="recipes") #обратная связь
     category=relationship("Category", backref="recipes") #обратная связь
-    mealtime=relationship("Mealtime", secondary='mealtime_recipe', backref='recipes') #время приготовления
-    ingredient=relationship("Ingredient", secondary='ingredient_recipe', backref='recipes') #ингредиенты
+    mealtime=relationship("Mealtime", secondary='mealtime_recipe', backref='recipes', order_by="Mealtime.id.asc()") #время приготовления
+    #ingredient=relationship("Ingredient", secondary='ingredients_recipes', backref='recipes') #ингредиенты
 
     steps: Mapped[list["Step"]]  = relationship(
         #back_populates="recipes",
         primaryjoin="and_(Recipe.id == Step.id_recipe)",
         order_by="Step.number.asc()"
         )
+    counts: Mapped[list["Count"]] = relationship(
+        #back_populates="recipes",
+        primaryjoin="and_(Recipe.id == Count.id_recipe)"
+        )
+
 
 class Ingredient(Base): #ингредиенты
     __tablename__ = "ingredients"
@@ -112,3 +110,16 @@ class Step(Base): #шаги рецепта
 
     #recipe=relationship("Recipe", backref="steps") #обратная связь #overlaps="steps"
     recipe: Mapped["Recipe"] = relationship(back_populates="steps")
+
+class Count(Base): #таблица, связывающая ингредиенты и рецепты
+    __tablename__ = "counts"
+
+    id = Column(Integer, primary_key=True)          
+    id_recipe = Column(Integer, ForeignKey('recipes.id'), nullable=False, default=1)
+    id_ingredient = Column(Integer, ForeignKey('ingredients.id'), nullable=False, default=1)
+    count = Column(Integer, nullable=False, default=1)
+    id_system_of_calc = Column(Integer, ForeignKey('system_of_calculations.id'), nullable=False, default=1)
+
+    recipe: Mapped["Recipe"] = relationship(back_populates='counts')
+    ingredient: Mapped["Ingredient"] = relationship(backref='counts')
+    system_of_calc: Mapped["System_of_calculation"] = relationship( backref='counts') #система исчисления

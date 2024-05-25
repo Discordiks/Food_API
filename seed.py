@@ -36,11 +36,11 @@ with Session(bind=engine) as session:
     m2=models.Mealtime(name="Обед")
     m3=models.Mealtime(name="Ужин")
 
-    r1=models.Recipe(name="Пицца", face_img="http://127.0.0.1:8000/recipe/files/pizza.jpg", cooking_time=45, category=c6, user=u1, mealtime=[m2,m3],ingredient=[i4,i5], published=False) #рецепты
-    r2=models.Recipe(name="Клубника в шоколаде", face_img="http://127.0.0.1:8000/recipe/files/choko.jpg", cooking_time=15, category=c1, user=u1, mealtime=[m1],ingredient=[i1,i2],published=True) 
-    r3=models.Recipe(name="Макароны с сыром", face_img="http://127.0.0.1:8000/recipe/files/mak.jpg", cooking_time=20, category=c6, user=u2, mealtime=[m2,m3],ingredient=[i4],published=True) 
-    r4=models.Recipe(name="Гречка с молоком", face_img="http://127.0.0.1:8000/recipe/files/grechka.jpg", cooking_time=20, category=c6, user=u1, mealtime=[m1,m2,m3],ingredient=[i6],published=False) 
-    r5=models.Recipe(name="Чай с малиной", face_img="http://127.0.0.1:8000/recipe/files/chay.png", cooking_time=10, category=c5, user=u2, mealtime=[m1,m2,m3],ingredient=[i7],published=True) 
+    r1=models.Recipe(name="Пицца", face_img="http://127.0.0.1:8000/recipe/files/pizza.jpg", cooking_time=45, category=c6, user=u1, mealtime=[m2,m3], published=False) #рецепты
+    r2=models.Recipe(name="Клубника в шоколаде", face_img="http://127.0.0.1:8000/recipe/files/choko.jpg", cooking_time=15, category=c1, user=u1, mealtime=[m1],published=True) 
+    r3=models.Recipe(name="Макароны с сыром", face_img="http://127.0.0.1:8000/recipe/files/mak.jpg", cooking_time=20, category=c6, user=u2, mealtime=[m2,m3],published=True) 
+    r4=models.Recipe(name="Гречка с молоком", face_img="http://127.0.0.1:8000/recipe/files/grechka.jpg", cooking_time=20, category=c6, user=u1, mealtime=[m1,m2,m3],published=False) 
+    r5=models.Recipe(name="Чай с малиной", face_img="http://127.0.0.1:8000/recipe/files/chay.png", cooking_time=10, category=c5, user=u2, mealtime=[m1,m2,m3],published=True) 
 
     s1=models.Step(number=1, info="Потрите сыр на тёрке", recipe=r1) #шаги
     s2=models.Step(number=2, info="Порежьте колбасу на кубики", recipe=r1) 
@@ -56,6 +56,9 @@ with Session(bind=engine) as session:
     ap4=models.Additional_photo(recipe_photo=r4, img="http://127.0.0.1:8000/recipe/files/grechka22.jpg") 
     ap5=models.Additional_photo(recipe_photo=r5, img="http://127.0.0.1:8000/recipe/files/chay2.jpg") 
 
-    session.add_all([u1,u2,u3, i1,i2,i3,i4,i5,i6,i7, soc1,soc2,soc3,soc4,soc5, c1,c2,c3,c4,c5,c6, m1,m2,m3, r1,r2,r3,r4,r5, s1,s2,s3,s4,s5,s6,s7, ap1,ap2,ap3,ap4,ap5])
+    count1=models.Count(recipe=r1, ingredient=i4, count=50, system_of_calc=soc2)
+    count2=models.Count(recipe=r1, ingredient=i5, count=100, system_of_calc=soc2)
+
+    session.add_all([u1,u2,u3, i1,i2,i3,i4,i5,i6,i7, soc1,soc2,soc3,soc4,soc5, c1,c2,c3,c4,c5,c6, m1,m2,m3, r1,r2,r3,r4,r5, s1,s2,s3,s4,s5,s6,s7, ap1,ap2,ap3,ap4,ap5, count1,count2])
     session.commit()
 

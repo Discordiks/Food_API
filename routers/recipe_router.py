@@ -22,6 +22,14 @@ router = APIRouter(
     tags=["recipe"],
 )
 
+#вывод одного рецепта
+@router.get("/{id}", response_model=pyd.RecipeScheme)
+async def get_recipes_one(id:int, db:Session=Depends(get_db)):
+    recipes_one=db.query(models.Recipe).filter(models.Recipe.id==id).first()
+    if not recipes_one:
+        raise HTTPException(status_code=404, detail="Рецепт не найден!")
+    return recipes_one
+
 #получение полного списка рецептов
 @router.get('/', response_model=List[pyd.RecipeScheme])
 async def get_recipes(db:Session=Depends(get_db)):
@@ -106,13 +114,6 @@ async def create_recipes(recipe_input:pyd.RecipeCreate, db:Session=Depends(get_d
             recipe_db.mealtime.append(mealtime_db)
         else:
             raise HTTPException(status_code=404, detail="Время приёма пищи не найдено!")
-    #ингредиенты  - несколько 
-    for id_ingredient in recipe_input.id_ingredient:
-        ingredient_db = db.query(models.Ingredient).filter(models.Ingredient.id==id_ingredient).first()
-        if ingredient_db:
-            recipe_db.ingredient.append(ingredient_db)
-        else:
-            raise HTTPException(status_code=404, detail="Ингредиент не найден!")
     recipe_db.cooking_time=recipe_input.cooking_time
     db.add(recipe_db)
     db.commit()

@@ -60,3 +60,8 @@ class StepBase(BaseModel):
     class Config:
         orm_mode=True #наша модель будет легко соедняться с бд
 
+class CountBase(BaseModel): #таблица, связывающая ингредиенты и рецепты
+    id:int=Field(...,gt=0,example=228) #обязательно к заполнению     
+    count:int=Field(...,gt=0,example=228)
+    class Config:
+            orm_mode=True #наша модель будет легко соедняться с бд
