@@ -59,6 +59,8 @@ with Session(bind=engine) as session:
     count1=models.Count(recipe=r1, ingredient=i4, count=50, system_of_calc=soc2)
     count2=models.Count(recipe=r1, ingredient=i5, count=100, system_of_calc=soc2)
 
-    session.add_all([u1,u2,u3, i1,i2,i3,i4,i5,i6,i7, soc1,soc2,soc3,soc4,soc5, c1,c2,c3,c4,c5,c6, m1,m2,m3, r1,r2,r3,r4,r5, s1,s2,s3,s4,s5,s6,s7, ap1,ap2,ap3,ap4,ap5, count1,count2])
+    score1=models.Score(user=u1, recipe=r2, like=True, dizlike=False)
+
+    session.add_all([u1,u2,u3, i1,i2,i3,i4,i5,i6,i7, soc1,soc2,soc3,soc4,soc5, c1,c2,c3,c4,c5,c6, m1,m2,m3, r1,r2,r3,r4,r5, s1,s2,s3,s4,s5,s6,s7, ap1,ap2,ap3,ap4,ap5, count1,count2, score1])
     session.commit()
 

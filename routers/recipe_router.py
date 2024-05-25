@@ -66,31 +66,12 @@ async def get_recipes_false(db:Session=Depends(get_db)):
 
 add_pagination(router)
 
-"""#читаем рецепты пагинацией со смещением
-@router.get("/blog/limit-offset", response_model=LimitOffsetPage[pyd.RecipeScheme])
-async def all_recipes(db: Session = Depends(get_db)):
-    disable_installed_extensions_check()
-    return paginate(db.query(models.Recipe).all())"""
-
-
 @router.get("/files/{img_name}")
 async def get_image(img_name:str, db:Session=Depends(get_db)):
     image_path = Path(f"files/{img_name}")
     if not image_path.is_file():
         return {"error": "Image not found on the server"}
     return FileResponse(image_path)
-
-#выводятся только те рецепты, где есть шаги
-"""@router.get('/', response_model=List[pyd.RecipeScheme])
-async def get_recipes(db:Session=Depends(get_db)):
-    query = (
-        select(models.Recipe)
-        .join(models.Recipe.steps)
-        .options(contains_eager(models.Recipe.steps)) #вложенная структура, не табличная
-        )
-    res = db.execute(query)
-    ress=res.unique().scalars().all()
-    return ress"""
 
 #добавление рецепта
 @router.post('/')

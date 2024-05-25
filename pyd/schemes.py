@@ -9,8 +9,6 @@ class RecipeScheme(RecipeBase):
     user:UserBase #связь с рецептами
     category:CategoryBase #связь с категориями
     mealtime:List[MealtimeBase] #связь с временем приёма пищи
-    #ingredient:List[IngredientBase] #связь с ингредиентами
-
     steps:List[StepBase]
     counts:List[CountScheme]
 
@@ -20,4 +18,6 @@ class Additional_photoScheme(Additional_photoBase):
 class StepScheme(StepBase):
     recipe:RecipeBase #связь с рецептами
 
-
+class ScoreScheme(ScoreBase):
+    user:UserBase
+    recipe:RecipeBase

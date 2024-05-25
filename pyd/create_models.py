@@ -57,3 +57,6 @@ class CountCreate(BaseModel):
     id_ingredient:int=Field(..., gt=0, example=10)
     count:int=Field(..., gt=0, example=10)
     id_system_of_calc:int=Field(..., gt=0, example=10)
+
+class ScoreCreate(BaseModel): 
+    pass
