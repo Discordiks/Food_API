@@ -66,12 +66,13 @@ async def get_recipes_false(db:Session=Depends(get_db)):
 
 add_pagination(router)
 
+#вывод картинки
 @router.get("/files/{img_name}")
 async def get_image(img_name:str, db:Session=Depends(get_db)):
     image_path = Path(f"files/{img_name}")
     if not image_path.is_file():
-        return {"error": "Image not found on the server"}
-    return FileResponse(image_path)
+        return {"error": "Изображение не найдено!"}
+    return FileResponse(image_path) 
 
 #добавление рецепта
 @router.post('/')
