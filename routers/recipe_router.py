@@ -66,6 +66,21 @@ async def get_recipes_false(db:Session=Depends(get_db)):
 
 add_pagination(router)
 
+#вывод опубликованных рецептов по категории и времени употребления
+@router.get("/page/true/{name}", response_model=Page[pyd.RecipeScheme])
+async def get_recipes_true(name: str, db:Session=Depends(get_db)):
+    category_db=db.query(models.Category).filter(models.Category.name==name).first()
+    if not category_db:
+        mealtime_db=db.query(models.Mealtime).filter(models.Mealtime.name==name).first()
+        if not mealtime_db:
+            raise HTTPException(status_code=404, detail="Категория не найдена!")
+        mealtime_recipes_true=db.query(models.Recipe).filter(models.Recipe.published==True).filter(models.Recipe.mealtime.contains(mealtime_db)).all()
+        return paginate(mealtime_recipes_true)
+    category_recipes_true=db.query(models.Recipe).filter(models.Recipe.published==True).filter(models.Recipe.category==category_db).all()
+    return paginate(category_recipes_true)
+
+add_pagination(router)
+
 #вывод картинки
 @router.get("/files/{img_name}")
 async def get_image(img_name:str, db:Session=Depends(get_db)):

@@ -161,6 +161,8 @@ with Session(bind=engine) as session:
     count36=models.Count(recipe=r6, ingredient=i6, count=1, system_of_calc=soc7)
 
     score1=models.Score(user=u1, recipe=r2, like=True, dizlike=False)
+    score2=models.Score(user=u2, recipe=r2, like=True, dizlike=False)
+    score3=models.Score(user=u2, recipe=r3, like=False, dizlike=True)
 
     session.add_all([u1,u2,u3,
                     c1,c2,c3,c4,c5,c6,
@@ -174,6 +176,6 @@ with Session(bind=engine) as session:
                     count11,count12,count13,count14,count15,count16,count17,count18,count19,count20,
                     count21,count22,count23,count24,count25,count26,count27,count28,count29,count30,
                     count31,count32,count33,count34,count35,count36,
-                    score1])
+                    score1,score2,score3])
     session.commit()
 
