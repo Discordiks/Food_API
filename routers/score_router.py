@@ -64,7 +64,7 @@ async def create_dizlike(id_recipe:int, db:Session=Depends(get_db),payload:dict=
     return score_db
 
 #нет никакой оценки
-@router.delete('/no/{id_recipe}', response_model=pyd.ScoreScheme)
+@router.delete('/no/{id_recipe}')
 async def no_scores(id_recipe:int, db:Session=Depends(get_db),payload:dict=Depends(auth_utils.auth_wrapper)):
     user_db = db.query(models.User).filter(models.User.name==payload.get("username")).first() #получаем пользователя
     recipe_db = db.query(models.Recipe).filter(models.Recipe.id==id_recipe).first() #находим рецепт, принадлежащий пользователю

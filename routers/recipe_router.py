@@ -22,10 +22,33 @@ router = APIRouter(
     tags=["recipe"],
 )
 
+#функция подсчёта лайков
+def likes_recipes(recipe,db:Session=Depends(get_db)):
+    recipes_likes=db.query(models.Score).filter(models.Score.id_recipe==recipe).filter(models.Score.like==True).all()
+    likes = recipes_likes.__len__()
+    return likes
+
+#функция подсчёта дизлайков
+def dizlikes_recipes(recipe,db:Session=Depends(get_db)):
+    recipes_dizlikes=db.query(models.Score).filter(models.Score.id_recipe==recipe).filter(models.Score.dizlike==True).all()
+    dizlikes = recipes_dizlikes.__len__()
+    return dizlikes
+
+#функция добавления рецептам лайков и дизлайков
+def for_recipes(recipe_db,db:Session=Depends(get_db)):
+    for recipe in recipe_db:
+        recipe.likes=likes_recipes(recipe.id,db)
+        recipe.dizlikes=dizlikes_recipes(recipe.id,db)
+    return recipe_db
+
+
 #вывод одного рецепта
 @router.get("/{id}", response_model=pyd.RecipeScheme)
 async def get_recipes_one(id:int, db:Session=Depends(get_db)):
     recipes_one=db.query(models.Recipe).filter(models.Recipe.id==id).first()
+    print("лайков вот столько", likes_recipes(id,db))
+    recipes_one.likes=likes_recipes(id,db)
+    recipes_one.dizlikes=dizlikes_recipes(id,db)
     if not recipes_one:
         raise HTTPException(status_code=404, detail="Рецепт не найден!")
     return recipes_one
@@ -40,12 +63,14 @@ async def get_recipes(db:Session=Depends(get_db)):
         ))
     res = db.execute(query)
     ress=res.scalars().all()
+    for_recipes(ress,db)
     return ress
 
 #читаем рецепты пагинацией
 @router.get("/page/all", response_model=Page[pyd.RecipeScheme])
 async def get_recipes_all(db:Session=Depends(get_db)):
     recipes_db=db.query(models.Recipe).all()
+    for_recipes(recipes_db,db)
     return paginate(recipes_db)
 
 add_pagination(router)
@@ -54,6 +79,7 @@ add_pagination(router)
 @router.get("/page/true", response_model=Page[pyd.RecipeScheme])
 async def get_recipes_true(db:Session=Depends(get_db)):
     recipes_true=db.query(models.Recipe).filter(models.Recipe.published==True).all()
+    for_recipes(recipes_true,db)
     return paginate(recipes_true)
 
 add_pagination(router)
@@ -62,13 +88,14 @@ add_pagination(router)
 @router.get("/page/false", response_model=Page[pyd.RecipeScheme])
 async def get_recipes_false(db:Session=Depends(get_db)):
     recipes_false=db.query(models.Recipe).filter(models.Recipe.published==False).all()
+    for_recipes(recipes_false,db)
     return paginate(recipes_false)
 
 add_pagination(router)
 
-#вывод опубликованных рецептов по категории и времени употребления
-@router.get("/page/true/{name}", response_model=Page[pyd.RecipeScheme])
-async def get_recipes_true(name: str, db:Session=Depends(get_db)):
+#вывод опубликованных рецептов по категории и времени употребления через query
+@router.get("/page/true/category/", response_model=Page[pyd.RecipeScheme])
+async def get_recipes_true_category(name: str, db:Session=Depends(get_db)):
     category_db=db.query(models.Category).filter(models.Category.name==name).first()
     if not category_db:
         mealtime_db=db.query(models.Mealtime).filter(models.Mealtime.name==name).first()
@@ -77,6 +104,7 @@ async def get_recipes_true(name: str, db:Session=Depends(get_db)):
         mealtime_recipes_true=db.query(models.Recipe).filter(models.Recipe.published==True).filter(models.Recipe.mealtime.contains(mealtime_db)).all()
         return paginate(mealtime_recipes_true)
     category_recipes_true=db.query(models.Recipe).filter(models.Recipe.published==True).filter(models.Recipe.category==category_db).all()
+    for_recipes(category_recipes_true,db)
     return paginate(category_recipes_true)
 
 add_pagination(router)
@@ -117,14 +145,14 @@ async def create_recipes(recipe_input:pyd.RecipeCreate, db:Session=Depends(get_d
     return "Рецепт отправлен модератору!"
 
 #добавление главного изображения рецепту
-@router.post('/img', response_model=pyd.RecipeScheme)
+@router.post('/img')
 async def create_photos(url:str= Depends(upload_file.save_file), db:Session=Depends(get_db),payload:dict=Depends(auth_utils.auth_wrapper)):
     user_db = db.query(models.User).filter(models.User.name==payload.get("username")).first() #получаем пользователя
     recipe_db = db.query(models.Recipe).filter(models.Recipe.id_user==user_db.id).order_by(models.Recipe.created_at.desc()).first() #находим рецепт, принадлежащий пользователю
     print(url)
     recipe_db.face_img=url
     db.commit()
-    return recipe_db
+    return "Изображение добавлено!"
 
 #редактирование рецепта
 @router.put('/{recipe_id}', response_model=pyd.RecipeScheme)

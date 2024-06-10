@@ -11,6 +11,8 @@ class RecipeScheme(RecipeBase):
     mealtime:List[MealtimeBase] #связь с временем приёма пищи
     steps:List[StepBase]
     counts:List[CountScheme]
+    likes:int
+    dizlikes:int
 
 class Additional_photoScheme(Additional_photoBase):
     recipe_photo:RecipeBase #связь с рецептами
