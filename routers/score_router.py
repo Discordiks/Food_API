@@ -32,12 +32,6 @@ def for_recipes(recipe_db,db:Session=Depends(get_db)):
         recipe.dizlikes=dizlikes_recipes(recipe.id,db)
     return recipe_db
 
-#получение рецептов с пользователями
-@router.get('/', response_model=List[pyd.ScoreScheme])
-async def get_scores(db:Session=Depends(get_db)):
-    scores=db.query(models.Score).all()
-    return scores
-
 #лайк
 @router.post('/like/{id_recipe}')
 async def create_like(id_recipe:int, db:Session=Depends(get_db),payload:dict=Depends(auth_utils.auth_wrapper)):
@@ -100,30 +94,26 @@ async def no_scores(id_recipe:int, db:Session=Depends(get_db),payload:dict=Depen
     db.commit()
     return "Пользователь не поставил оценку этому рецепту"
 
-#проверка на лайки у определённого рецепта
-@router.get('/likes/{id_recipe}')
-async def get_likes_user(id_recipe:int, db:Session=Depends(get_db),payload:dict=Depends(auth_utils.auth_wrapper)):
+#проверка на лайки/дизлайки у определённого рецепта
+@router.get('/info/{id_recipe}', response_model=pyd.ScoreScheme)
+async def get_info_user_recipe(id_recipe:int, db:Session=Depends(get_db),payload:dict=Depends(auth_utils.auth_wrapper)):
     user_db = db.query(models.User).filter(models.User.name==payload.get("username")).first() #получаем пользователя
     recipe_db = db.query(models.Recipe).filter(models.Recipe.id==id_recipe).first() #находим рецепт, принадлежащий пользователю
     if not recipe_db:
         raise HTTPException(status_code=404, detail="Рецепт не найден!")
     recipe_db.likes=likes_recipes(recipe_db.id,db)
     recipe_db.dizlikes=dizlikes_recipes(recipe_db.id,db)
-    score_db=db.query(models.Score).filter(models.Score.id_user==user_db.id).filter(models.Score.id_recipe==id_recipe).filter(models.Score.like==True).first() #получаем score
-    if not score_db:
-        raise HTTPException(status_code=404, detail=False)
-    return True
-
-#проверка на дизлайки у определённого рецепта
-@router.get('/dizlikes/{id_recipe}')
-async def get_dizlikes_user(id_recipe:int, db:Session=Depends(get_db),payload:dict=Depends(auth_utils.auth_wrapper)):
-    user_db = db.query(models.User).filter(models.User.name==payload.get("username")).first() #получаем пользователя
-    recipe_db = db.query(models.Recipe).filter(models.Recipe.id==id_recipe).first() #находим рецепт, принадлежащий пользователю
-    if not recipe_db:
-        raise HTTPException(status_code=404, detail="Рецепт не найден!")
-    recipe_db.likes=likes_recipes(recipe_db.id,db)
-    recipe_db.dizlikes=dizlikes_recipes(recipe_db.id,db)
-    score_db=db.query(models.Score).filter(models.Score.id_user==user_db.id).filter(models.Score.id_recipe==id_recipe).filter(models.Score.dizlike==True).first() #получаем score
-    if not score_db:
-        raise HTTPException(status_code=404, detail=False)
-    return True
+    score_like=db.query(models.Score).filter(models.Score.id_user==user_db.id).filter(models.Score.id_recipe==id_recipe).filter(models.Score.like==True).filter(models.Score.dizlike==False).first() #получаем score like
+    score_dizlike=db.query(models.Score).filter(models.Score.id_user==user_db.id).filter(models.Score.id_recipe==id_recipe).filter(models.Score.dizlike==True).filter(models.Score.like==False).first() #получаем score dizlike
+    pyd.ScoreScheme.likes=recipe_db.likes
+    pyd.ScoreScheme.dislikes=recipe_db.dizlikes
+    if score_like:
+        pyd.ScoreScheme.status_like=True
+        pyd.ScoreScheme.status_dizlike=False
+    if score_dizlike:
+        pyd.ScoreScheme.status_like=False
+        pyd.ScoreScheme.status_dizlike=True
+    if not score_like and not score_dizlike:
+        pyd.ScoreScheme.status_like=False
+        pyd.ScoreScheme.status_dizlike=False
+    return pyd.ScoreScheme

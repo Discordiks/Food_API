@@ -32,22 +32,51 @@ def randomword(length):
    letters = string.ascii_lowercase+string.digits
    return ''.join(random.choice(letters) for i in range(length))
 
+#получение количества рецептов:
+def count_recipes(id_user,db:Session=Depends(get_db)):
+    recipes_count=db.query(models.Recipe).filter(models.Recipe.id_user==id_user).filter(models.Recipe.published==True).all()
+    count = recipes_count.__len__()
+    return count
+
+#функция подсчёта лайков
+def likes_recipes(id_user,db:Session=Depends(get_db)):
+    users_likes=db.query(models.Score).filter(models.Score.id_user==id_user).filter(models.Score.like==True).all()
+    likes = users_likes.__len__()
+    return likes
+
+#функция подсчёта дизлайков
+def dizlikes_recipes(id_user,db:Session=Depends(get_db)):
+    users_dizlikes=db.query(models.Score).filter(models.Score.id_user==id_user).filter(models.Score.dizlike==True).all()
+    dizlikes = users_dizlikes.__len__()
+    return dizlikes
+
+#добавление рейтинга и количества
+def raiting_recipes(user_db,db:Session=Depends(get_db)):
+    user_db.raiting= likes_recipes(user_db.id,db) * 2 - dizlikes_recipes(user_db.id,db)
+    if user_db.raiting < 0:
+        user_db.raiting=0
+    user_db.count_r=count_recipes(user_db.id,db)
+    return user_db
+
 #получение пользователя
 def get_current_auth_user(payload:dict=Depends(auth_utils.auth_wrapper), db:Session=Depends(get_db)):
     username:str | None = payload.get("sub")
     users_db=db.query(models.User).filter(models.User.name==username).first()
     if users_db: #вытаскиваем пользователя из бд
+        raiting_recipes(users_db,db)
         return users_db
     raise HTTPException(status_code=401, detail="Токен не найден")
 
 #получение списка пользователей
-@router.get('/', response_model=List[pyd.UserBase])
+@router.get('/', response_model=List[pyd.UserScheme])
 async def get_users(db:Session=Depends(get_db)):
     users=db.query(models.User).all()
+    for user in users:
+        raiting_recipes(user,db)
     return users
 
 #добавление пользователя (регистрация)
-@router.post('/reg', response_model=pyd.UserBase)
+@router.post('/reg', response_model=pyd.UserScheme)
 async def reg_user(user_input:pyd.UserCreate, db: Session = Depends(get_db)):
     user_db=db.query(models.User).filter(models.User.mail==user_input.mail).first()
     user_db_2=db.query(models.User).filter(models.User.name==user_input.name).first()
@@ -67,31 +96,30 @@ async def reg_user(user_input:pyd.UserCreate, db: Session = Depends(get_db)):
     db.commit()
     send_email_message(user_db.mail,'Проверочное письмо для едыыыы',
                        f'<h1>Время кушать</h1><a href="http://127.0.0.1:8000/user/verify/?code={email_verify_token}">Время найти еду</a>')
+    raiting_recipes(user_db,db)
     return user_db
 
 #редактирование фото пользователя
-@router.put('/my_profile_img', response_model=pyd.UserBase)
+@router.put('/my_profile_img', response_model=pyd.UserEditingImg)
 async def update_users_img(url:str= Depends(upload_file.save_file),user:pyd.UserBase=Depends(get_current_auth_user), db:Session=Depends(get_db),payload:dict=Depends(auth_utils.auth_wrapper)):
     user_db=db.query(models.User).filter(models.User.name==user.name).first()
     user_db.img_avatar=url
     db.commit()
+    raiting_recipes(user_db,db)
     return user_db
 
 #редактирование почты пользователя
-@router.put('/my_profile_mail', response_model=pyd.UserBase)
+@router.put('/my_profile_mail', response_model=pyd.UserEditingMail)
 async def update_users_mail(user_input:pyd.UserEditingMail,user:pyd.UserBase=Depends(get_current_auth_user), db:Session=Depends(get_db),payload:dict=Depends(auth_utils.auth_wrapper)):
     user_db=db.query(models.User).filter(models.User.name==user.name).first()
-    if not user_db:
-        raise HTTPException(status_code=404, detail="Пользователь не найден!")
-    user_input=db.query(models.User).filter(models.User.mail==user_input.mail).first() #ввёл почту
+    user_db_0=db.query(models.User).filter(models.User.mail==user_input.mail).first() #ввёл почту
     user_db_1=db.query(models.User).where(models.User.mail==user.mail).first() #почта в дб равна почте пользователя, что сейчас зарегистрировался
-    """if user_nn.mail and user_nn.mail != user_db_1.mail:
-        raise HTTPException(400, 'Email занят')"""
-    if user_input:
+    if user_db_0:
         if user_db.mail == user_input.mail:
             raise HTTPException(400, 'Ваша почта осталась вашей почтой!')
-        if user_input.mail and user_input.mail != user_db_1.mail:
+        if user_db_0.mail and user_db_0.mail != user_db_1.mail:
             raise HTTPException(400, 'Email занят')
+    print("GJXNFFFFFFFFFFFFFFFF", user_input.mail)
     user_db.mail=user_input.mail
     db.commit()
     email_verify_token=randomword(25)
@@ -99,23 +127,26 @@ async def update_users_mail(user_input:pyd.UserEditingMail,user:pyd.UserBase=Dep
     user_db.email_verify_code=email_verify_token
     db.commit()
     send_email_message(user_db.mail,'Проверочное письмо для едыыыы',
-                       f'<h1>Время кушать</h1><a href="http://127.0.0.1:8000/user/verify/?code={email_verify_token}">Время найти еду</a>')
+                    f'<h1>Время кушать</h1><a href="http://127.0.0.1:8000/user/verify/?code={email_verify_token}">Время найти еду</a>')
+    raiting_recipes(user_db,db)
     return user_db
 
 #редактирование пароля пользователя
-@router.put('/my_profile_pass', response_model=pyd.UserBase)
+@router.put('/my_profile_pass', response_model=pyd.UserEditingPass)
 async def update_users_pass(user_input:pyd.UserEditingPass,user:pyd.UserBase=Depends(get_current_auth_user), db:Session=Depends(get_db),payload:dict=Depends(auth_utils.auth_wrapper)):
     user_db=db.query(models.User).filter(models.User.name==user.name).first()
     user_db.password = auth_utils.get_password_hash(user_input.password)
     db.commit()
+    raiting_recipes(user_db,db)
     return user_db
 
 #редактирование рассылки пользователя
-@router.put('/my_profile_maling', response_model=pyd.UserBase)
+@router.put('/my_profile_maling', response_model=pyd.UserEditingMailing)
 async def update_users_maling(user_input:pyd.UserEditingMailing,user:pyd.UserBase=Depends(get_current_auth_user), db:Session=Depends(get_db),payload:dict=Depends(auth_utils.auth_wrapper)):
     user_db=db.query(models.User).filter(models.User.name==user.name).first()
     user_db.mailing=user_input.mailing
     db.commit()
+    raiting_recipes(user_db,db)
     return user_db
 
 #удаление пользователя
@@ -164,6 +195,16 @@ def auth_user_issue_jwt(cred: pyd.Credentials, db:Session=Depends(get_db)):
         token_type="Bearer", #стандартный тип токена
     )
 
+#проверка токена
+@router.get("/me")
+def auth_user_check_self_info(payload:dict=Depends(auth_utils.auth_wrapper), user:pyd.UserScheme=Depends(get_current_auth_user)):
+    return {
+        "username": user.name,
+        "email": user.mail,
+        "count_r": user.count_r,
+        "raiting": user.raiting,
+        }
+
 #получение paylaod токена
 """def get_current_token_payload(
         credentials:HTTPAuthorizationCredentials=Depends(http_bearer)
@@ -182,13 +223,5 @@ def auth_user_issue_jwt(cred: pyd.Credentials, db:Session=Depends(get_db)):
 #        return user
 #    raise HTTPException(status_code=403, detail="Пользователь не активен")
 
-#проверка токена
-@router.get("/me")
-def auth_user_check_self_info(payload:dict=Depends(auth_utils.auth_wrapper), user:pyd.UserBase=Depends(get_current_auth_user)):
-    iat = payload.get("iat")
-    return {
-        "username": user.name,
-        "email": user.mail,
-        "logged_in_ait": iat
-        }
+
     
