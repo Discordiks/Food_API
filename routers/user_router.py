@@ -28,6 +28,9 @@ router = APIRouter(
 http_bearer = HTTPBearer() #получаем токен из запроса
 #oauth2_sheme = OAuth2PasswordBearer(tokenUrl="/user/login") #откуда пришёл токен
 
+def validate_auth_user():
+    pass
+
 def randomword(length): 
    letters = string.ascii_lowercase+string.digits
    return ''.join(random.choice(letters) for i in range(length))
@@ -40,14 +43,20 @@ def count_recipes(id_user,db:Session=Depends(get_db)):
 
 #функция подсчёта лайков
 def likes_recipes(id_user,db:Session=Depends(get_db)):
-    users_likes=db.query(models.Score).filter(models.Score.id_user==id_user).filter(models.Score.like==True).all()
-    likes = users_likes.__len__()
+    recipes=db.query(models.Recipe).filter(models.Recipe.id_user==id_user).all()
+    likes = 0
+    for recipe in recipes:
+        users_likes_db=db.query(models.Score).filter(models.Score.id_recipe==recipe.id).filter(models.Score.like==True).all()
+        likes = likes + users_likes_db.__len__()
     return likes
 
 #функция подсчёта дизлайков
 def dizlikes_recipes(id_user,db:Session=Depends(get_db)):
-    users_dizlikes=db.query(models.Score).filter(models.Score.id_user==id_user).filter(models.Score.dizlike==True).all()
-    dizlikes = users_dizlikes.__len__()
+    recipes=db.query(models.Recipe).filter(models.Recipe.id_user==id_user).all()
+    dizlikes = 0
+    for recipe in recipes:
+        users_dizlikes_db=db.query(models.Score).filter(models.Score.id_recipe==recipe.id).filter(models.Score.dizlike==True).all()
+        dizlikes = dizlikes + users_dizlikes_db.__len__()
     return dizlikes
 
 #добавление рейтинга и количества
@@ -74,6 +83,15 @@ async def get_users(db:Session=Depends(get_db)):
     for user in users:
         raiting_recipes(user,db)
     return users
+
+#получение топ-3 пользователей по рейтингу
+@router.get('/top', response_model=List[pyd.UserScheme])
+async def get_users_top(db:Session=Depends(get_db)):
+    users=db.query(models.User).all()
+    for user in users:
+        raiting_recipes(user,db)
+    sorted_users = sorted(users, key=lambda x: x.raiting, reverse=True)
+    return sorted_users[0],sorted_users[1],sorted_users[2]
 
 #добавление пользователя (регистрация)
 @router.post('/reg', response_model=pyd.UserScheme)
@@ -155,8 +173,19 @@ async def delete_users(db:Session=Depends(get_db),user:pyd.UserBase=Depends(get_
     if not user_db:
         raise HTTPException(status_code=404, detail="Пользователь не найден!")
     db.delete(user_db)
-    #удаление рецепта
-    db.query(models.Recipe).filter(models.Recipe.id_user==user_db.id).delete()
+    recipe_db=db.query(models.Recipe).filter(models.Recipe.id_user==user_db.id).all()
+    for recipe in recipe_db:
+        #удаление рецепта
+        db.query(models.Recipe).filter(models.Recipe.id==recipe.id).delete()
+        #удаление шагов
+        db.query(models.Step).filter(models.Step.id_recipe==recipe.id).delete()
+        #удаление дополнительных фото
+        db.query(models.Additional_photo).filter(models.Additional_photo.id_recipe==recipe.id).delete()
+        #удаление количества
+        db.query(models.Count).filter(models.Count.id_recipe==recipe.id).delete()
+        #удаление оценок
+        db.query(models.Score).filter(models.Score.id_recipe==recipe.id).delete()
+        db.query(models.Score).filter(models.Score.id_user==user_db.id).delete()
     db.commit()
     return "Удаление пользователя прошло успешно!"
 
@@ -170,9 +199,6 @@ async def verify_email(code:str,db: Session = Depends(get_db),payload:dict=Depen
     user_db.email_verify_code=None
     db.commit()
     return RedirectResponse('http://127.0.0.1:8000')
-
-def validate_auth_user():
-    pass
 
 #вход пользователя
 @router.post("/login", response_model=TokenInfo)

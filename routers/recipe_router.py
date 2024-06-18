@@ -71,6 +71,14 @@ async def get_recipes(db:Session=Depends(get_db)):
     for_recipes(ress,db)
     return ress
 
+#вывод топ-3 рецептов по рейтингу
+@router.get("/top/", response_model=List[pyd.RecipeScheme])
+async def get_recipes_top(db:Session=Depends(get_db)):
+    recipes_true=db.query(models.Recipe).filter(models.Recipe.published==True).all()
+    for_recipes(recipes_true,db)
+    sorted_recipes = sorted(recipes_true, key=lambda x: x.raiting, reverse=True)
+    return sorted_recipes[0],sorted_recipes[1],sorted_recipes[2]
+
 #читаем рецепты пагинацией
 @router.get("/page/all", response_model=Page[pyd.RecipeScheme])
 async def get_recipes_all(db:Session=Depends(get_db)):
@@ -92,23 +100,24 @@ async def get_recipes_true(sort:str, db:Session=Depends(get_db)):
         for_recipes(recipes_true,db)
         return paginate(recipes_true)
     if sort == "raiting":
-        recipes=db.query(models.Recipe).all()
-        for_recipes(recipes,db)
-        print("lskflkdlgklfdg", recipes)
         recipes_true=db.query(models.Recipe).filter(models.Recipe.published==True).all()
-        #sorted(recipes_true,key=lambda x: x[3][1])
-        return paginate(recipes_true)
+        for_recipes(recipes_true,db)
+        sorted_recipes = sorted(recipes_true, key=lambda x: x.raiting, reverse=True)
+        return paginate(sorted_recipes)
     else:
         raise HTTPException(status_code=404, detail="Указана неверная сортировка!") 
 
 add_pagination(router)
 
 #вывод неопубликованных рецептов
-@router.get("/page/false", response_model=Page[pyd.RecipeScheme]) #защитить токеном
-async def get_recipes_false(db:Session=Depends(get_db)):
-    recipes_false=db.query(models.Recipe).filter(models.Recipe.published==False).all()
-    for_recipes(recipes_false,db)
-    return paginate(recipes_false)
+@router.get("/page/false", response_model=Page[pyd.RecipeScheme]) #только админ
+async def get_recipes_false(db:Session=Depends(get_db), payload:dict=Depends(auth_utils.auth_wrapper)):
+    if payload.get("username") == "edok228":
+        recipes_false=db.query(models.Recipe).filter(models.Recipe.published==False).all()
+        for_recipes(recipes_false,db)
+        return paginate(recipes_false)
+    else:
+        raise HTTPException(status_code=404, detail="Вы не администратор!")
 
 add_pagination(router)
 
@@ -135,9 +144,7 @@ async def get_recipes_true_search(name: str, db:Session=Depends(get_db)):
     name = name.lower()
     recipes_first=db.query(models.Recipe).filter(models.Recipe.published==True).filter(models.Recipe.name.contains(name)).order_by(models.Recipe.name.asc()).all()
     if name[0] == name[0].lower():
-        print("gthdfz dhtvz", name[0])
         name = name[0].upper() + name[1:]
-        print("dnjhfz dthcbz ", name[0].upper())
         recipes_second=db.query(models.Recipe).filter(models.Recipe.published==True).filter(models.Recipe.name.contains(name)).order_by(models.Recipe.name.asc()).all()
         recipes = recipes_second+recipes_first
     for_recipes(recipes,db)
@@ -191,7 +198,7 @@ async def create_recipes(recipe_input:pyd.RecipeCreate, step_input:List[pyd.Step
     #добавление данных в таблицу Count
     for count_int in count_input:
         count_db=models.Count()
-        count_db.recipe=recipe_db #добавляю рецепт
+        count_db.recipe=recipe_db #добавление рецепт
         ing_db=db.query(models.Ingredient).filter(models.Ingredient.id==count_int.id_ingredient).first() 
         if not ing_db:
             raise HTTPException(status_code=404, detail="Ингредиент не найден!")
@@ -255,32 +262,38 @@ async def update_recipes(recipe_id:int, url:str= Depends(upload_file.save_file),
     return recipe_db
 
 #удаление рецепта
-@router.delete('/{recipe_id}')
+@router.delete('/{recipe_id}') #только админ
 async def delete_recipes(recipe_id:int, db:Session=Depends(get_db),payload:dict=Depends(auth_utils.auth_wrapper)):
-    recipe_db=db.query(models.Recipe).filter(models.Recipe.id==recipe_id).first()
-    if not recipe_db:
-        raise HTTPException(status_code=404, detail="Рецепт не найден!")
-    db.delete(recipe_db)
-    #удаление шагов
-    db.query(models.Step).filter(models.Step.id_recipe==recipe_id).delete()
-    #удаление дополнительных фото
-    db.query(models.Additional_photo).filter(models.Additional_photo.id_recipe==recipe_id).delete()
-    #удаление количества
-    db.query(models.Count).filter(models.Count.id_recipe==recipe_id).delete()
-    #удаление оценок
-    db.query(models.Score).filter(models.Score.id_recipe==recipe_id).delete()
-    db.commit()
-    return "Удаление рецепта прошло успешно!"
+    if payload.get("username") == "edok228":
+        recipe_db=db.query(models.Recipe).filter(models.Recipe.id==recipe_id).first()
+        if not recipe_db:
+            raise HTTPException(status_code=404, detail="Рецепт не найден!")
+        db.delete(recipe_db)
+        #удаление шагов
+        db.query(models.Step).filter(models.Step.id_recipe==recipe_id).delete()
+        #удаление дополнительных фото
+        db.query(models.Additional_photo).filter(models.Additional_photo.id_recipe==recipe_id).delete()
+        #удаление количества
+        db.query(models.Count).filter(models.Count.id_recipe==recipe_id).delete()
+        #удаление оценок
+        db.query(models.Score).filter(models.Score.id_recipe==recipe_id).delete()
+        db.commit()
+        return "Удаление рецепта прошло успешно!"
+    else:
+        raise HTTPException(status_code=404, detail="Вы не администратор!")
 
 #публикация рецепта
-@router.put('/published/{recipe_id}')
+@router.put('/published/{recipe_id}') #только админ
 async def published_recipes(recipe_id:int, db:Session=Depends(get_db),payload:dict=Depends(auth_utils.auth_wrapper)):
-    recipe_db=db.query(models.Recipe).filter(models.Recipe.id==recipe_id).first()
-    if not recipe_db:
-        raise HTTPException(status_code=404, detail="Рецепт не найден!")
-    if recipe_db.published == True:
-        return "Этот рецепт уже опубликован!"
-    else: 
-        recipe_db.published = True
-    db.commit()
-    return "Рецепт успешно опубликован!"
+    if payload.get("username") == "edok228":
+        recipe_db=db.query(models.Recipe).filter(models.Recipe.id==recipe_id).first()
+        if not recipe_db:
+            raise HTTPException(status_code=404, detail="Рецепт не найден!")
+        if recipe_db.published == True:
+            return "Этот рецепт уже опубликован!"
+        else: 
+            recipe_db.published = True
+        db.commit()
+        return "Рецепт успешно опубликован!"
+    else:
+        raise HTTPException(status_code=404, detail="Вы не администратор!")

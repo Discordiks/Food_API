@@ -10,6 +10,8 @@ with Session(bind=engine) as session:
     u1=models.User(name="Малинина", mail="recipes228@mail.ru",img_avatar="recipe/files/food.png", password="$2b$12$/2gx.pO8GYYk7yASJfH3m.rYwOgaO/GvZ6Mzvqvyq.ZdT/mnZBpRS", mailing=False, email_verify=1) #пользователи
     u2=models.User(name="Хомяк", mail="recipes223@mail.ru",img_avatar="recipe/files/food.png", password="$2b$12$o3y6j3I0lS/MqDQ79AxSG.hZIBKC9JyYOUYeIaQh1lCsYeRWKzg9i", mailing=False, email_verify=1)
     u3=models.User(name="edok228", mail="admin@mail.ru",img_avatar="recipe/files/food.png", password="$2b$12$3/w7zRoYtYe4344FtJtlRuKDkfLAiZd3XqZaHaxn1zJ/DFcG/Brs6", mailing=True, email_verify=1)
+    u4=models.User(name="Любимка", mail="lovelove@mail.ru",img_avatar="recipe/files/food.png", password="$2b$12$3/w7zRoYtYe4344FtJtlRuKDkfLAiZd3XqZaHaxn1zJ/DFcG/Brs6", mailing=True, email_verify=1)
+    u5=models.User(name="Обжоркин", mail="objorkin@mail.ru",img_avatar="recipe/files/food.png", password="$2b$12$3/w7zRoYtYe4344FtJtlRuKDkfLAiZd3XqZaHaxn1zJ/DFcG/Brs6", mailing=True, email_verify=1)
     
     c1=models.Category(name="Десерт") #категории
     c2=models.Category(name="Мясо")
@@ -63,7 +65,7 @@ with Session(bind=engine) as session:
     r3=models.Recipe(name="Макароны с сыром", face_img="recipe/files/mak.jpg", cooking_time=20, category=c6, user=u2, mealtime=[m2,m3],published=True) 
     r4=models.Recipe(name="Гречка с молоком", face_img="recipe/files/grechka.jpg", cooking_time=60, category=c6, user=u1, mealtime=[m1,m2,m3],published=False) 
     r5=models.Recipe(name="Чай с малиной", face_img="recipe/files/chay.jpg", cooking_time=15, category=c5, user=u2, mealtime=[m1,m2,m3],published=True) 
-    r6=models.Recipe(name="Манник", face_img="recipe/files/mannik.jpg", cooking_time=100, category=c1, user=u2, mealtime=[m1,m2,m3],published=True) 
+    r6=models.Recipe(name="Манник", face_img="recipe/files/mannik.jpg", cooking_time=100, category=c1, user=u4, mealtime=[m1,m2,m3],published=True) 
 
     #пицца
     s1=models.Step(number=1, info="В тёплой воде, нагретой до 37-40°С, растворите сахар. А затем всыпьте дрожжи и оставьте на 15 минут до появления пышной шапочки. Если шапочки так и не появилось, то либо дрожжи испорчены, либо перегрели воду и тесто не поднимется. Нужно замешивать заново.", recipe=r1) #шаги
@@ -160,11 +162,16 @@ with Session(bind=engine) as session:
     count35=models.Count(recipe=r6, ingredient=i1, count=150, system_of_calc=soc2)
     count36=models.Count(recipe=r6, ingredient=i6, count=1, system_of_calc=soc7)
 
-    score1=models.Score(user=u1, recipe=r2, like=True, dizlike=False)
+    score1=models.Score(user=u1, recipe=r2, like=True, dizlike=False) #баллы
     score2=models.Score(user=u2, recipe=r2, like=True, dizlike=False)
     score3=models.Score(user=u2, recipe=r3, like=False, dizlike=True)
+    score4=models.Score(user=u5, recipe=r3, like=True, dizlike=False)
+    score5=models.Score(user=u5, recipe=r5, like=False, dizlike=True)
+    score6=models.Score(user=u5, recipe=r6, like=True, dizlike=False)
+    score7=models.Score(user=u1, recipe=r6, like=True, dizlike=False)
+    score8=models.Score(user=u4, recipe=r5, like=True, dizlike=False)
 
-    session.add_all([u1,u2,u3,
+    session.add_all([u1,u2,u3,u4,u5,
                     c1,c2,c3,c4,c5,c6,
                     m1,m2,m3,
                     i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15,i16,i17,i18,i19,i20,i21,i22,i23,i24,i25,i26,i27,
@@ -176,6 +183,6 @@ with Session(bind=engine) as session:
                     count11,count12,count13,count14,count15,count16,count17,count18,count19,count20,
                     count21,count22,count23,count24,count25,count26,count27,count28,count29,count30,
                     count31,count32,count33,count34,count35,count36,
-                    score1,score2,score3])
+                    score1,score2,score3,score4,score5,score6,score7,score8])
     session.commit()
 
