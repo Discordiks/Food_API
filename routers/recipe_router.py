@@ -80,8 +80,8 @@ async def get_recipes_all(db:Session=Depends(get_db)):
 
 add_pagination(router)
 
-#вывод опубликованных рецептов
-@router.get("/page/true", response_model=Page[pyd.RecipeScheme]) #Доабивать квери сортировуки
+#вывод опубликованных рецептов с сортировкой
+@router.get("/page/true", response_model=Page[pyd.RecipeScheme]) 
 async def get_recipes_true(sort:str, db:Session=Depends(get_db)):
     if sort == "created_at":
         recipes_true=db.query(models.Recipe).filter(models.Recipe.published==True).order_by(models.Recipe.created_at.asc()).all()
@@ -92,15 +92,11 @@ async def get_recipes_true(sort:str, db:Session=Depends(get_db)):
         for_recipes(recipes_true,db)
         return paginate(recipes_true)
     if sort == "raiting":
-        recipes_true=db.query(models.Recipe).filter(models.Recipe.published==True).order_by(models.Recipe.cooking_time.desc()).all()
-        for_recipes(recipes_true,db)
-        print(recipes_true)
-        for recipe in recipes_true:
-            arr=[]
-            arr.append(recipe.raiting)
-        arr.sort()
-        print (type(recipes_true))
-        recipes_true= sorted(recipes_true['items']['items'], key=lambda x : x['items']['items'], reverse=True)
+        recipes=db.query(models.Recipe).all()
+        for_recipes(recipes,db)
+        print("lskflkdlgklfdg", recipes)
+        recipes_true=db.query(models.Recipe).filter(models.Recipe.published==True).all()
+        #sorted(recipes_true,key=lambda x: x[3][1])
         return paginate(recipes_true)
     else:
         raise HTTPException(status_code=404, detail="Указана неверная сортировка!") 
@@ -117,7 +113,7 @@ async def get_recipes_false(db:Session=Depends(get_db)):
 add_pagination(router)
 
 #вывод опубликованных рецептов по категории и времени употребления через query
-@router.get("/page/true/category/", response_model=Page[pyd.RecipeScheme]) #Доабивать квери сортировуки
+@router.get("/page/true/category/", response_model=Page[pyd.RecipeScheme]) 
 async def get_recipes_true_category(name: str, db:Session=Depends(get_db)):
     category_db=db.query(models.Category).filter(models.Category.name==name).first()
     if not category_db:
@@ -133,6 +129,22 @@ async def get_recipes_true_category(name: str, db:Session=Depends(get_db)):
 
 add_pagination(router)
 
+#вывод опубликованных рецептов по названию рецепта через query
+@router.get("/page/true/search/", response_model=Page[pyd.RecipeScheme])
+async def get_recipes_true_search(name: str, db:Session=Depends(get_db)):
+    name = name.lower()
+    recipes_first=db.query(models.Recipe).filter(models.Recipe.published==True).filter(models.Recipe.name.contains(name)).order_by(models.Recipe.name.asc()).all()
+    if name[0] == name[0].lower():
+        print("gthdfz dhtvz", name[0])
+        name = name[0].upper() + name[1:]
+        print("dnjhfz dthcbz ", name[0].upper())
+        recipes_second=db.query(models.Recipe).filter(models.Recipe.published==True).filter(models.Recipe.name.contains(name)).order_by(models.Recipe.name.asc()).all()
+        recipes = recipes_second+recipes_first
+    for_recipes(recipes,db)
+    return paginate(recipes)
+
+add_pagination(router)
+
 #вывод картинки
 @router.get("/files/{img_name}")
 async def get_image(img_name:str, db:Session=Depends(get_db)):
@@ -145,7 +157,7 @@ async def get_image(img_name:str, db:Session=Depends(get_db)):
 @router.post('/')
 async def create_recipes(recipe_input:pyd.RecipeCreate, step_input:List[pyd.StepCreate], count_input:List[pyd.CountCreate], db:Session=Depends(get_db), payload:dict=Depends(auth_utils.auth_wrapper)):
     #добавление данных в талицу Recipe
-    user_db = db.query(models.User).filter(models.User.name==payload.get("username")).first() #находим зарегестрированного сейчас пользователя
+    user_db = db.query(models.User).filter(models.User.name==payload.get("username")).first() #находим зарегистрированного сейчас пользователя
     recipe_db=models.Recipe()
     recipe_db.name=recipe_input.name
     #категория - одна
@@ -180,12 +192,12 @@ async def create_recipes(recipe_input:pyd.RecipeCreate, step_input:List[pyd.Step
     for count_int in count_input:
         count_db=models.Count()
         count_db.recipe=recipe_db #добавляю рецепт
-        ing_db=db.query(models.Ingredient).filter(models.Ingredient.id==count_int.id_ingredient).first() #получаем пользователя
+        ing_db=db.query(models.Ingredient).filter(models.Ingredient.id==count_int.id_ingredient).first() 
         if not ing_db:
             raise HTTPException(status_code=404, detail="Ингредиент не найден!")
         count_db.id_ingredient=ing_db.id
         count_db.count=count_int.count
-        sys_db=db.query(models.System_of_calculation).filter(models.System_of_calculation.id==count_int.id_system_of_calc).first() #получаем пользователя
+        sys_db=db.query(models.System_of_calculation).filter(models.System_of_calculation.id==count_int.id_system_of_calc).first() 
         if not sys_db:
             raise HTTPException(status_code=404, detail="Система исчисления не найдена!")
         count_db.id_system_of_calc = sys_db.id
@@ -253,6 +265,10 @@ async def delete_recipes(recipe_id:int, db:Session=Depends(get_db),payload:dict=
     db.query(models.Step).filter(models.Step.id_recipe==recipe_id).delete()
     #удаление дополнительных фото
     db.query(models.Additional_photo).filter(models.Additional_photo.id_recipe==recipe_id).delete()
+    #удаление количества
+    db.query(models.Count).filter(models.Count.id_recipe==recipe_id).delete()
+    #удаление оценок
+    db.query(models.Score).filter(models.Score.id_recipe==recipe_id).delete()
     db.commit()
     return "Удаление рецепта прошло успешно!"
 

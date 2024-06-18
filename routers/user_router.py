@@ -119,7 +119,6 @@ async def update_users_mail(user_input:pyd.UserEditingMail,user:pyd.UserBase=Dep
             raise HTTPException(400, 'Ваша почта осталась вашей почтой!')
         if user_db_0.mail and user_db_0.mail != user_db_1.mail:
             raise HTTPException(400, 'Email занят')
-    print("GJXNFFFFFFFFFFFFFFFF", user_input.mail)
     user_db.mail=user_input.mail
     db.commit()
     email_verify_token=randomword(25)

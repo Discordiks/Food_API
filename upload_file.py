@@ -9,8 +9,6 @@ def save_file(file: UploadFile):
         raise HTTPException(400)
     #if file.size > 100000;
     # raise HTTPException(400)
-    print(file)
-    print(file.filename)
     with open(f'files/{file.filename}', 'wb') as f:
         f.write(file.file.read())
     url = str(f'recipe/files/{file.filename}')
