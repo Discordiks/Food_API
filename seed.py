@@ -51,6 +51,19 @@ with Session(bind=engine) as session:
     i25=models.Ingredient(name="Сметана") #манник
     i26=models.Ingredient(name="Манка")
     i27=models.Ingredient(name="Яйцо")
+    i28=models.Ingredient(name="Горошек") #добавочные
+    i29=models.Ingredient(name="Огурцы")
+    i30=models.Ingredient(name="Лосось")
+    i31=models.Ingredient(name="Сгущёнка")
+    i32=models.Ingredient(name="Зелёный чай")
+    i33=models.Ingredient(name="Курица")
+    i34=models.Ingredient(name="Телятина")
+    i35=models.Ingredient(name="Баранина")
+    i36=models.Ingredient(name="Яблоко")
+    i37=models.Ingredient(name="Банан")
+    i38=models.Ingredient(name="Груша")
+    i39=models.Ingredient(name="Печенье")
+    i40=models.Ingredient(name="Картофель")
 
     soc1=models.System_of_calculation(name="Кг") #система исчисления
     soc2=models.System_of_calculation(name="Г")
@@ -174,7 +187,7 @@ with Session(bind=engine) as session:
     session.add_all([u1,u2,u3,u4,u5,
                     c1,c2,c3,c4,c5,c6,
                     m1,m2,m3,
-                    i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15,i16,i17,i18,i19,i20,i21,i22,i23,i24,i25,i26,i27,
+                    i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15,i16,i17,i18,i19,i20,i21,i22,i23,i24,i25,i26,i27,i28,i29,i30,i31,i32,i33,i34,i35,i36,i37,i38,i39,i40,
                     soc1,soc2,soc3,soc4,soc5,soc6,soc7,
                     r1,r2,r3,r4,r5,r6,
                     s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13,s14,s15,s16,s17,s18,s19,s20,s21,s22,s23,s24,s25,s26,s27,s28,s29,s30,s31,s32,

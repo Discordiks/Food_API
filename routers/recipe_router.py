@@ -331,8 +331,6 @@ async def create_recipes(recipe_input:pyd.RecipeCreate, step_input:List[pyd.Step
 async def create_photos(url:str= Depends(upload_file.save_file), db:Session=Depends(get_db),payload:dict=Depends(auth_utils.auth_wrapper)):
     user_db = db.query(models.User).filter(models.User.name==payload.get("username")).first() #получаем пользователя
     recipe_db = db.query(models.Recipe).filter(models.Recipe.id_user==user_db.id).order_by(models.Recipe.created_at.desc()).first() #находим рецепт, принадлежащий пользователю
-    print(url)
-    print(url[0:13]+str(recipe_db.id)+url[13:])
     recipe_db.face_img=url
     db.commit()
     return "Изображение добавлено!"
@@ -391,14 +389,15 @@ async def delete_recipes(recipe_id:int, db:Session=Depends(get_db),payload:dict=
         db.query(models.Count).filter(models.Count.id_recipe==recipe_id).delete()
         #удаление оценок
         db.query(models.Score).filter(models.Score.id_recipe==recipe_id).delete()
-        """recipes=db.query(models.Recipe).all()
+        recipes=db.query(models.Recipe).all()
         a=0
+        #удаление фотографии из папки
         for recipe in recipes:
             if recipe.face_img == recipe_db.face_img:
                 a=a+1
         if a == 1:
-            url = str(recipe.face_img)
-            Path.unlink(url[7:]) """
+            url = str(recipe_db.face_img)
+            Path.unlink(url[7:]) 
         db.commit()
         return "Удаление рецепта прошло успешно!"
     else:
