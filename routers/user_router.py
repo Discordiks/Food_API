@@ -228,25 +228,9 @@ def auth_user_check_self_info(payload:dict=Depends(auth_utils.auth_wrapper), use
         "email": user.mail,
         "count_r": user.count_r,
         "raiting": user.raiting,
+        "mailing":user.mailing
         }
 
-#получение paylaod токена
-"""def get_current_token_payload(
-        credentials:HTTPAuthorizationCredentials=Depends(http_bearer)
-        #token:str=Depends(oauth2_sheme)
-        ):
-    token = credentials.credentials
-    try:
-        payload = auth_utils.decode_jwt(token=token)
-    except InvalidTokenError as e:
-        raise HTTPException(status_code=401, detail=f"Токен неверен!: {e}")
-    return payload"""
-
-#проверка пользователя на активность
-#def get_current_active_auth_user(user:pyd.UserBase=Depends(get_current_auth_user)):
-#    if user.active:
-#        return user
-#    raise HTTPException(status_code=403, detail="Пользователь не активен")
 
 
     

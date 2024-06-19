@@ -337,39 +337,60 @@ async def create_photos(url:str= Depends(upload_file.save_file), db:Session=Depe
 
 #редактирование рецепта
 @router.put('/{recipe_id}', response_model=pyd.RecipeScheme)
-async def update_recipes(recipe_id:int, url:str= Depends(upload_file.save_file),recipe_input:pyd.RecipeCreate=Depends(), db:Session=Depends(get_db),payload:dict=Depends(auth_utils.auth_wrapper)):
-    recipe_db=db.query(models.Recipe).filter(models.Recipe.id==recipe_id).first()
+async def update_recipes(recipe_id:int,recipe_input:pyd.RecipeCreate, step_input:List[pyd.StepCreate], count_input:List[pyd.CountCreate], db:Session=Depends(get_db),payload:dict=Depends(auth_utils.auth_wrapper)):
+    user_db = db.query(models.User).filter(models.User.name==payload.get("username")).first() #получаем пользователя
+    recipe_db = db.query(models.Recipe).filter(models.Recipe.id_user==user_db.id).filter(models.Recipe.id==recipe_id).first() #находим рецепт, принадлежащий пользователю
     if not recipe_db:
         raise HTTPException(status_code=404, detail="Рецепт не найден!")
     recipe_db.name=recipe_input.name
-    recipe_db.face_img=url
     #категория - одна
     category_db = db.query(models.Category).filter(models.Category.id==recipe_input.id_category).first()
-    if not category_db:
+    if category_db:
+        recipe_db.category=category_db #отношение
+    else:
         raise HTTPException(status_code=404, detail="Категория не найдена!")
-    recipe_db.category=category_db
     #пользователь - одна
-    user_db = db.query(models.User).filter(models.User.id==recipe_input.id_user).first()
-    if not user_db:
-        raise HTTPException(status_code=404, detail="Пользователь не найден!")
-    recipe_db.user=user_db
-    #время приёма пищи  - несколько
-    for mealtime_id in recipe_input.id_mealtime:
-        mealtime_db = db.query(models.Mealtime).filter(models.Mealtime.id==mealtime_id).first()
+    recipe_db.user=user_db #обращение конкретно к отношению
+    #время приёма пищи  - несколько 
+    recipe_db.mealtime.clear()
+    for id_mealtime in recipe_input.id_mealtime:
+        mealtime_db = db.query(models.Mealtime).filter(models.Mealtime.id==id_mealtime).first()
         if mealtime_db:
-            recipe_db.mealtime.clear()
             recipe_db.mealtime.append(mealtime_db)
         else:
             raise HTTPException(status_code=404, detail="Время приёма пищи не найдено!")
-    #ингредиенты  - несколько
-    for ingredient_id in recipe_input.id_ingredient:
-        ingredient_db = db.query(models.Ingredient).filter(models.Ingredient.id==ingredient_id).first()
-        if ingredient_db:
-            recipe_db.ingredient.clear()
-            recipe_db.ingredient.append(ingredient_db)
-        else:
-            raise HTTPException(status_code=404, detail="Ингредиент не найден!")
     recipe_db.cooking_time=recipe_input.cooking_time
+    db.add(recipe_db)
+    #db.commit()
+
+    #удаление предыдущих шагов
+    db.query(models.Step).filter(models.Step.id_recipe==recipe_id).delete()
+    #добавление данных в таблицу Step
+    for step in step_input:
+        step_db=models.Step()
+        step_db.number=(step_input.index(step)) + 1
+        step_db.info=step.info
+        step_db.recipe=recipe_db
+        db.add(step_db)
+        #db.commit()
+        
+    #удаление количества
+    db.query(models.Count).filter(models.Count.id_recipe==recipe_id).delete()
+    #добавление данных в таблицу Count
+    for count_int in count_input:
+        count_db=models.Count()
+        count_db.recipe=recipe_db #добавление рецепт
+        ing_db=db.query(models.Ingredient).filter(models.Ingredient.id==count_int.id_ingredient).first() 
+        if not ing_db:
+            raise HTTPException(status_code=404, detail="Ингредиент не найден!")
+        count_db.id_ingredient=ing_db.id
+        count_db.count=count_int.count
+        sys_db=db.query(models.System_of_calculation).filter(models.System_of_calculation.id==count_int.id_system_of_calc).first() 
+        if not sys_db:
+            raise HTTPException(status_code=404, detail="Система исчисления не найдена!")
+        count_db.id_system_of_calc = sys_db.id
+        db.add(count_db)
+        #db.commit()
     db.commit()
     return recipe_db
 
