@@ -8,10 +8,10 @@ models.Base.metadata.create_all(bind=engine) #пересоздание табл�
 with Session(bind=engine) as session:
     #123456 и qwerty
     u1=models.User(name="Малинина", mail="recipes228@mail.ru",img_avatar="recipe/files/food.png", password="$2b$12$/2gx.pO8GYYk7yASJfH3m.rYwOgaO/GvZ6Mzvqvyq.ZdT/mnZBpRS", mailing=False, email_verify=1) #пользователи
-    u2=models.User(name="Хомяк", mail="recipes223@mail.ru",img_avatar="recipe/files/food.png", password="$2b$12$o3y6j3I0lS/MqDQ79AxSG.hZIBKC9JyYOUYeIaQh1lCsYeRWKzg9i", mailing=False, email_verify=1)
+    u2=models.User(name="Хомяк", mail="recipes223@mail.ru",img_avatar="recipe/files/food4.jpg", password="$2b$12$o3y6j3I0lS/MqDQ79AxSG.hZIBKC9JyYOUYeIaQh1lCsYeRWKzg9i", mailing=False, email_verify=1)
     u3=models.User(name="edok228", mail="admin@mail.ru",img_avatar="recipe/files/food.png", password="$2b$12$3/w7zRoYtYe4344FtJtlRuKDkfLAiZd3XqZaHaxn1zJ/DFcG/Brs6", mailing=True, email_verify=1)
-    u4=models.User(name="Любимка", mail="lovelove@mail.ru",img_avatar="recipe/files/food.png", password="$2b$12$3/w7zRoYtYe4344FtJtlRuKDkfLAiZd3XqZaHaxn1zJ/DFcG/Brs6", mailing=True, email_verify=1)
-    u5=models.User(name="Обжоркин", mail="objorkin@mail.ru",img_avatar="recipe/files/food.png", password="$2b$12$3/w7zRoYtYe4344FtJtlRuKDkfLAiZd3XqZaHaxn1zJ/DFcG/Brs6", mailing=True, email_verify=1)
+    u4=models.User(name="Любимка", mail="lovelove@mail.ru",img_avatar="recipe/files/food2.jpg", password="$2b$12$3/w7zRoYtYe4344FtJtlRuKDkfLAiZd3XqZaHaxn1zJ/DFcG/Brs6", mailing=True, email_verify=1)
+    u5=models.User(name="Обжоркин", mail="objorkin@mail.ru",img_avatar="recipe/files/food3.jpg", password="$2b$12$3/w7zRoYtYe4344FtJtlRuKDkfLAiZd3XqZaHaxn1zJ/DFcG/Brs6", mailing=True, email_verify=1)
     
     c1=models.Category(name="Десерт") #категории
     c2=models.Category(name="Мясо")

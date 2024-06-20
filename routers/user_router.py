@@ -185,7 +185,7 @@ async def delete_users(db:Session=Depends(get_db),user:pyd.UserBase=Depends(get_
         db.query(models.Count).filter(models.Count.id_recipe==recipe.id).delete()
         #удаление оценок
         db.query(models.Score).filter(models.Score.id_recipe==recipe.id).delete()
-        db.query(models.Score).filter(models.Score.id_user==user_db.id).delete()
+    db.query(models.Score).filter(models.Score.id_user==user_db.id).delete()
     db.commit()
     return "Удаление пользователя прошло успешно!"
 
