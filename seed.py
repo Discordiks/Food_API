@@ -65,13 +65,13 @@ with Session(bind=engine) as session:
     i39=models.Ingredient(name="Печенье")
     i40=models.Ingredient(name="Картофель")
 
-    soc1=models.System_of_calculation(name="Кг") #система исчисления
-    soc2=models.System_of_calculation(name="Г")
-    soc3=models.System_of_calculation(name="Л")
-    soc4=models.System_of_calculation(name="Мл")
-    soc5=models.System_of_calculation(name="Шт")
-    soc6=models.System_of_calculation(name="Стол. л.")
-    soc7=models.System_of_calculation(name="Чайн. л.")
+    soc1=models.System_of_calculation(name="кг") #система исчисления
+    soc2=models.System_of_calculation(name="г")
+    soc3=models.System_of_calculation(name="л")
+    soc4=models.System_of_calculation(name="мл")
+    soc5=models.System_of_calculation(name="шт.")
+    soc6=models.System_of_calculation(name="стол. л.")
+    soc7=models.System_of_calculation(name="чайн. л.")
 
     r1=models.Recipe(name="Пицца", face_img="recipe/files/pizza.jpg", cooking_time=120, category=c6, user=u1, mealtime=[m2,m3], published=False) #рецепты
     r2=models.Recipe(name="Клубника в шоколаде", face_img="recipe/files/choko.jpg", cooking_time=30, category=c1, user=u1, mealtime=[m1],published=True) 
