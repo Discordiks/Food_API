@@ -228,7 +228,8 @@ def auth_user_check_self_info(payload:dict=Depends(auth_utils.auth_wrapper), use
         "email": user.mail,
         "count_r": user.count_r,
         "raiting": user.raiting,
-        "mailing":user.mailing
+        "mailing": user.mailing,
+        "image": user.img_avatar
         }
 
 
