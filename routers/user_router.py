@@ -112,8 +112,8 @@ async def reg_user(user_input:pyd.UserCreate, db: Session = Depends(get_db)):
     email_verify_token+=str(user_db.id)
     user_db.email_verify_code=email_verify_token
     db.commit()
-    send_email_message(user_db.mail,'Проверочное письмо для едыыыы',
-                       f'<h1>Время кушать</h1><a href="http://127.0.0.1:8000/user/verify/?code={email_verify_token}">Время найти еду</a>')
+    # send_email_message(user_db.mail,'Проверочное письмо для едыыыы',
+    #                    f'<h1>Время кушать</h1><a href="http://127.0.0.1:8000/user/verify/?code={email_verify_token}">Время найти еду</a>')
     raiting_recipes(user_db,db)
     return user_db
 
@@ -143,8 +143,8 @@ async def update_users_mail(user_input:pyd.UserEditingMail,user:pyd.UserBase=Dep
     email_verify_token+=str(user_db.id)
     user_db.email_verify_code=email_verify_token
     db.commit()
-    send_email_message(user_db.mail,'Проверочное письмо для едыыыы',
-                    f'<h1>Время кушать</h1><a href="http://127.0.0.1:8000/user/verify/?code={email_verify_token}">Время найти еду</a>')
+    # send_email_message(user_db.mail,'Проверочное письмо для едыыыы',
+    #                 f'<h1>Время кушать</h1><a href="http://127.0.0.1:8000/user/verify/?code={email_verify_token}">Время найти еду</a>')
     raiting_recipes(user_db,db)
     return user_db
 
