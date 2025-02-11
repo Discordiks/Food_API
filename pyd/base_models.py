@@ -31,7 +31,7 @@ class IngredientBase(BaseModel):
 
 class System_of_calculationBase(BaseModel):
     id:int=Field(...,gt=0,example=228) #обязательно к заполнению
-    name:str=Field(...,example="Кг")
+    name:str=Field(...,example="кг")
     class Config:
         orm_mode=True #наша модель будет легко соедняться с бд
 
@@ -70,5 +70,12 @@ class ScoreBase(BaseModel): #таблица лайков и дизлайков
     id:int=Field(...,gt=0,example=228) #обязательно к заполнению     
     like:bool=Field(...,ge=0,example=False)
     dizlike:bool=Field(...,ge=0,example=False)
+    class Config:
+            orm_mode=True #наша модель будет легко соедняться с бд
+
+class LangBase(BaseModel): #таблица языков
+    id:int=Field(...,gt=0,example=228) #обязательно к заполнению     
+    name:str=Field(...,example="English")
+    code:str=Field(...,example="en")
     class Config:
             orm_mode=True #наша модель будет легко соедняться с бд

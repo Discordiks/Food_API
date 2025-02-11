@@ -20,9 +20,20 @@ with Session(bind=engine) as session:
     c5=models.Category(name="Напиток")
     c6=models.Category(name="Основное")
 
+    c1_en=models.Category(name="Dessert") #категории на английском
+    c2_en=models.Category(name="Meat")
+    c3_en=models.Category(name="Soup")
+    c4_en=models.Category(name="Fish")
+    c5_en=models.Category(name="Drink")
+    c6_en=models.Category(name="Main dish")
+
     m1=models.Mealtime(name="Завтрак") #время приёма пищи
     m2=models.Mealtime(name="Обед")
     m3=models.Mealtime(name="Ужин")
+
+    m1_en=models.Mealtime(name="Breakfast") #время приёма пищи на английском
+    m2_en=models.Mealtime(name="Lunch")
+    m3_en=models.Mealtime(name="Dinner")
 
     i1=models.Ingredient(name="Пшеничная мука") #ингредиенты
     i2=models.Ingredient(name="Вода") #пицца
@@ -36,7 +47,7 @@ with Session(bind=engine) as session:
     i10=models.Ingredient(name="Чеснок")
     i11=models.Ingredient(name="Приправы")
     i12=models.Ingredient(name="Сыр Моцарелла")
-    i13=models.Ingredient(name="Сырокопчёнаая колбаса")
+    i13=models.Ingredient(name="Сырокопчёная колбаса")
     i14=models.Ingredient(name="Оливковое масло")
     i15=models.Ingredient(name="Шоколад") #клубника в шоколаде
     i16=models.Ingredient(name="Клубника")
@@ -64,6 +75,47 @@ with Session(bind=engine) as session:
     i38=models.Ingredient(name="Груша")
     i39=models.Ingredient(name="Печенье")
     i40=models.Ingredient(name="Картофель")
+
+    i1_en=models.Ingredient(name="Wheat flour") #ингредиенты на английском
+    i2_en=models.Ingredient(name="Water") #пицца
+    i3_en=models.Ingredient(name="Dry yeast")
+    i4_en=models.Ingredient(name="Vegetable oil")
+    i5_en=models.Ingredient(name="Sugar")
+    i6_en=models.Ingredient(name="Salt")
+    i7_en=models.Ingredient(name="Tomatoes")
+    i8_en=models.Ingredient(name="Mayonnaise") 
+    i9_en=models.Ingredient(name="Ketchup")
+    i10_en=models.Ingredient(name="Garlic")
+    i11_en=models.Ingredient(name="Seasonings")
+    i12_en=models.Ingredient(name="Mozzarella cheese")
+    i13_en=models.Ingredient(name="Raw smoked sausage")
+    i14_en=models.Ingredient(name="Olive oil")
+    i15_en=models.Ingredient(name="Chocolate") #клубника в шоколаде
+    i16_en=models.Ingredient(name="Strawberry")
+    i17_en=models.Ingredient(name="Pasta") #макароны с сыром
+    i18_en=models.Ingredient(name="Buckwheat groats") #гречка с молоком
+    i19_en=models.Ingredient(name="Milk")
+    i20_en=models.Ingredient(name="Butter")
+    i21_en=models.Ingredient(name="Raspberry") #чай с малиной
+    i22_en=models.Ingredient(name="Black tea")
+    i23_en=models.Ingredient(name="Lime")
+    i24_en=models.Ingredient(name="Mint")
+    i25_en=models.Ingredient(name="Sour cream") #манник
+    i26_en=models.Ingredient(name="Semolina")
+    i27_en=models.Ingredient(name="Egg")
+    i28_en=models.Ingredient(name="Pea") #добавочные
+    i29_en=models.Ingredient(name="Cucumbers")
+    i30_en=models.Ingredient(name="Salmon")
+    i31_en=models.Ingredient(name="Condensed milk")
+    i32_en=models.Ingredient(name="Green tea")
+    i33_en=models.Ingredient(name="Chicken")
+    i34_en=models.Ingredient(name="Veal")
+    i35_en=models.Ingredient(name="Sheepmeat")
+    i36_en=models.Ingredient(name="Apple")
+    i37_en=models.Ingredient(name="Banana")
+    i38_en=models.Ingredient(name="Pear")
+    i39_en=models.Ingredient(name="Cookie")
+    i40_en=models.Ingredient(name="Potato")
 
     soc1=models.System_of_calculation(name="кг") #система исчисления
     soc2=models.System_of_calculation(name="г")

@@ -30,7 +30,7 @@ class IngredientCreate(BaseModel):
     name:str=Field(...,max_length=255, min_length=1,example="Морковка")
 
 class System_of_calculationCreate(BaseModel):
-    name:str=Field(...,max_length=255, min_length=1,example="Кг")
+    name:str=Field(...,max_length=255, min_length=1,example="кг")
 
 class CategoryCreate(BaseModel):
     name:str=Field(...,max_length=255, min_length=1,example="Десерт")
