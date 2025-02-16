@@ -125,6 +125,14 @@ with Session(bind=engine) as session:
     soc6=models.System_of_calculation(name="стол. л.")
     soc7=models.System_of_calculation(name="чайн. л.")
 
+    soc1_en=models.System_of_calculation(name="kg") #система исчисления на английском
+    soc2_en=models.System_of_calculation(name="g")
+    soc3_en=models.System_of_calculation(name="l")
+    soc4_en=models.System_of_calculation(name="ml")
+    soc5_en=models.System_of_calculation(name="pcs.")
+    soc6_en=models.System_of_calculation(name="tbsp.")
+    soc7_en=models.System_of_calculation(name="tsp.")
+
     r1=models.Recipe(name="Пицца", face_img="recipe/files/pizza.jpg", cooking_time=120, category=c6, user=u1, mealtime=[m2,m3], published=False) #рецепты
     r2=models.Recipe(name="Клубника в шоколаде", face_img="recipe/files/choko.jpg", cooking_time=30, category=c1, user=u1, mealtime=[m1],published=True) 
     r3=models.Recipe(name="Макароны с сыром", face_img="recipe/files/mak.jpg", cooking_time=20, category=c6, user=u2, mealtime=[m2,m3],published=True) 
@@ -236,6 +244,11 @@ with Session(bind=engine) as session:
     score7=models.Score(user=u1, recipe=r6, like=True, dizlike=False)
     score8=models.Score(user=u4, recipe=r5, like=True, dizlike=False)
 
+    l1=models.Lang(name="Русский", code="ru") #языки
+    l2=models.Lang(name="English", code="en")
+
+    t1=models.Translation(recipe=r1, lang=l2, text="jjjjj")
+
     session.add_all([u1,u2,u3,u4,u5,
                     c1,c2,c3,c4,c5,c6,
                     m1,m2,m3,
@@ -248,6 +261,7 @@ with Session(bind=engine) as session:
                     count11,count12,count13,count14,count15,count16,count17,count18,count19,count20,
                     count21,count22,count23,count24,count25,count26,count27,count28,count29,count30,
                     count31,count32,count33,count34,count35,count36,
-                    score1,score2,score3,score4,score5,score6,score7,score8])
+                    score1,score2,score3,score4,score5,score6,score7,score8,
+                    l1,l2])
     session.commit()
 

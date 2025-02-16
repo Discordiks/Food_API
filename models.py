@@ -124,4 +124,19 @@ class Score(Base): #таблица лайков и дизлайков
     user: Mapped["User"] = relationship(backref='scores')
     recipe: Mapped["Recipe"] = relationship(backref='scores')
 
+class Lang(Base):
+    __tablename__ = "langs"
+    id = Column(Integer, primary_key=True)    
+    name = Column(String(255), nullable=False)
+    code = Column(String(255), nullable=False)
+
+class Translation(Base):
+    __tablename__ = "translations"
+    id = Column(Integer, primary_key=True)
+    id_recipe = Column(Integer, ForeignKey('recipes.id', ondelete="CASCADE"), nullable=False, default=1)
+    id_lang = Column(Integer, ForeignKey('langs.id', ondelete="CASCADE"), nullable=False, default=1)
+    text = Column(String(255), nullable=False)
+
+    recipe: Mapped["Recipe"] = relationship(backref='translations')
+    lang: Mapped["Lang"] = relationship(backref='langs')
 

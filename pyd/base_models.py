@@ -79,3 +79,9 @@ class LangBase(BaseModel): #таблица языков
     code:str=Field(...,example="en")
     class Config:
             orm_mode=True #наша модель будет легко соедняться с бд
+
+class TranslationBase(BaseModel): #таблица языков
+    id:int=Field(...,gt=0,example=228) #обязательно к заполнению     
+    text:str=Field(...,example="Cake")
+    class Config:
+            orm_mode=True #наша модель будет легко соедняться с бд
