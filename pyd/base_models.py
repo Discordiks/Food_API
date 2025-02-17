@@ -80,8 +80,46 @@ class LangBase(BaseModel): #таблица языков
     class Config:
             orm_mode=True #наша модель будет легко соедняться с бд
 
-class TranslationBase(BaseModel): #таблица языков
+#переводы
+
+class TranslationCategoryBase(BaseModel): #таблица перевода категорий
+    id:int=Field(...,gt=0,example=228) #обязательно к заполнению     
+    text:str=Field(...,example="Dessert")
+    class Config:
+            orm_mode=True #наша модель будет легко соедняться с бд
+
+class TranslationMealtimeBase(BaseModel): #таблица перевода времени употребления
+    id:int=Field(...,gt=0,example=228) #обязательно к заполнению     
+    text:str=Field(...,example="Dinner")
+    class Config:
+            orm_mode=True #наша модель будет легко соедняться с бд
+
+class TranslationIngredientBase(BaseModel): #таблица перевода ингредиентов
+    id:int=Field(...,gt=0,example=228) #обязательно к заполнению     
+    text:str=Field(...,example="Lime")
+    class Config:
+            orm_mode=True #наша модель будет легко соедняться с бд
+
+class TranslationSysOfCalcBase(BaseModel): #таблица перевода системы исчисления
+    id:int=Field(...,gt=0,example=228) #обязательно к заполнению     
+    text:str=Field(...,example="kg")
+    class Config:
+            orm_mode=True #наша модель будет легко соедняться с бд
+
+class TranslationRecipeBase(BaseModel): #таблица перевода рецептов
     id:int=Field(...,gt=0,example=228) #обязательно к заполнению     
     text:str=Field(...,example="Cake")
     class Config:
             orm_mode=True #наша модель будет легко соедняться с бд
+
+class TranslationStepBase(BaseModel): #таблица перевода шагов
+    id:int=Field(...,gt=0,example=228) #обязательно к заполнению     
+    text:str=Field(...,example="Cake")
+    class Config:
+            orm_mode=True #наша модель будет легко соедняться с бд
+
+
+
+
+
+

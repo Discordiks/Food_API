@@ -130,13 +130,63 @@ class Lang(Base):
     name = Column(String(255), nullable=False)
     code = Column(String(255), nullable=False)
 
-class Translation(Base):
-    __tablename__ = "translations"
+class TranslationCategory(Base):
+    __tablename__ = "translation_categories"
+    id = Column(Integer, primary_key=True)
+    id_category = Column(Integer, ForeignKey('categories.id', ondelete="CASCADE"), nullable=False, default=1)
+    id_lang = Column(Integer, ForeignKey('langs.id', ondelete="CASCADE"), nullable=False, default=1)
+    text = Column(String(255), nullable=False)
+
+    category: Mapped["Category"] = relationship(backref='translations')
+    lang: Mapped["Lang"] = relationship(backref='translation_categories')
+
+class TranslationMealtime(Base):
+    __tablename__ = "translation_mealtimes"
+    id = Column(Integer, primary_key=True)
+    id_mealtime = Column(Integer, ForeignKey('mealtimes.id', ondelete="CASCADE"), nullable=False, default=1)
+    id_lang = Column(Integer, ForeignKey('langs.id', ondelete="CASCADE"), nullable=False, default=1)
+    text = Column(String(255), nullable=False)
+
+    mealtime: Mapped["Mealtime"] = relationship(backref='translations')
+    lang: Mapped["Lang"] = relationship(backref='translation_mealtimes')
+
+class TranslationIngredient(Base):
+    __tablename__ = "translation_ingredients"
+    id = Column(Integer, primary_key=True)
+    id_ingredient = Column(Integer, ForeignKey('ingredients.id', ondelete="CASCADE"), nullable=False, default=1)
+    id_lang = Column(Integer, ForeignKey('langs.id', ondelete="CASCADE"), nullable=False, default=1)
+    text = Column(String(255), nullable=False)
+
+    ingredient: Mapped["Ingredient"] = relationship(backref='translations')
+    lang: Mapped["Lang"] = relationship(backref='translation_ingredients')
+
+class TranslationSysOfCalc(Base):
+    __tablename__ = "translation_sys_of_calcs"
+    id = Column(Integer, primary_key=True)
+    id_sys_of_calc = Column(Integer, ForeignKey('system_of_calculations.id', ondelete="CASCADE"), nullable=False, default=1)
+    id_lang = Column(Integer, ForeignKey('langs.id', ondelete="CASCADE"), nullable=False, default=1)
+    text = Column(String(255), nullable=False)
+
+    sys_of_calc: Mapped["System_of_calculation"] = relationship(backref='translations')
+    lang: Mapped["Lang"] = relationship(backref='translation_sys_of_calcs')
+
+class TranslationRecipe(Base):
+    __tablename__ = "translation_recipes"
     id = Column(Integer, primary_key=True)
     id_recipe = Column(Integer, ForeignKey('recipes.id', ondelete="CASCADE"), nullable=False, default=1)
     id_lang = Column(Integer, ForeignKey('langs.id', ondelete="CASCADE"), nullable=False, default=1)
     text = Column(String(255), nullable=False)
 
     recipe: Mapped["Recipe"] = relationship(backref='translations')
-    lang: Mapped["Lang"] = relationship(backref='langs')
+    lang: Mapped["Lang"] = relationship(backref='translation_recipes')
+
+class TranslationStep(Base):
+    __tablename__ = "translation_steps"
+    id = Column(Integer, primary_key=True)
+    id_step = Column(Integer, ForeignKey('steps.id', ondelete="CASCADE"), nullable=False, default=1)
+    id_lang = Column(Integer, ForeignKey('langs.id', ondelete="CASCADE"), nullable=False, default=1)
+    text = Column(String(255), nullable=False)
+
+    step: Mapped["Step"] = relationship(backref='translations')
+    lang: Mapped["Lang"] = relationship(backref='translation_steps')
 
