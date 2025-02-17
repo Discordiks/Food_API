@@ -5,12 +5,16 @@ class CountScheme(CountBase):
     ingredient: IngredientBase
     system_of_calc:System_of_calculationBase
 
+class TranslationRecipeScheme(TranslationRecipeBase):
+    lang:LangBase #связь с языком
+
 class RecipeScheme(RecipeBase):
     user:UserBase #связь с рецептами
     category:CategoryBase #связь с категориями
     mealtime:List[MealtimeBase] #связь с временем приёма пищи
     steps:List[StepBase]
     counts:List[CountScheme]
+    translation:List[TranslationRecipeScheme] #связь с переводом
     likes:int
     dizlikes:int
     raiting:int

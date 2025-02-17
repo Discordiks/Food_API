@@ -55,6 +55,10 @@ class Recipe(Base): #рецепты
         #back_populates="recipes",
         primaryjoin="and_(Recipe.id == Count.id_recipe)"
         )
+    translation: Mapped[list["TranslationRecipe"]]  = relationship(
+        #back_populates="recipes",
+        primaryjoin="and_(Recipe.id == TranslationRecipe.id_recipe)"
+        )
 
 class Ingredient(Base): #ингредиенты
     __tablename__ = "ingredients"
@@ -137,7 +141,7 @@ class TranslationCategory(Base):
     id_lang = Column(Integer, ForeignKey('langs.id', ondelete="CASCADE"), nullable=False, default=1)
     text = Column(String(255), nullable=False)
 
-    category: Mapped["Category"] = relationship(backref='translations')
+    category: Mapped["Category"] = relationship(backref='categories')
     lang: Mapped["Lang"] = relationship(backref='translation_categories')
 
 class TranslationMealtime(Base):
@@ -147,7 +151,7 @@ class TranslationMealtime(Base):
     id_lang = Column(Integer, ForeignKey('langs.id', ondelete="CASCADE"), nullable=False, default=1)
     text = Column(String(255), nullable=False)
 
-    mealtime: Mapped["Mealtime"] = relationship(backref='translations')
+    mealtime: Mapped["Mealtime"] = relationship(backref='mealtimes')
     lang: Mapped["Lang"] = relationship(backref='translation_mealtimes')
 
 class TranslationIngredient(Base):
@@ -157,7 +161,7 @@ class TranslationIngredient(Base):
     id_lang = Column(Integer, ForeignKey('langs.id', ondelete="CASCADE"), nullable=False, default=1)
     text = Column(String(255), nullable=False)
 
-    ingredient: Mapped["Ingredient"] = relationship(backref='translations')
+    ingredient: Mapped["Ingredient"] = relationship(backref='ingredients')
     lang: Mapped["Lang"] = relationship(backref='translation_ingredients')
 
 class TranslationSysOfCalc(Base):
@@ -167,7 +171,7 @@ class TranslationSysOfCalc(Base):
     id_lang = Column(Integer, ForeignKey('langs.id', ondelete="CASCADE"), nullable=False, default=1)
     text = Column(String(255), nullable=False)
 
-    sys_of_calc: Mapped["System_of_calculation"] = relationship(backref='translations')
+    sys_of_calc: Mapped["System_of_calculation"] = relationship(backref='system_of_calculations')
     lang: Mapped["Lang"] = relationship(backref='translation_sys_of_calcs')
 
 class TranslationRecipe(Base):
@@ -177,7 +181,7 @@ class TranslationRecipe(Base):
     id_lang = Column(Integer, ForeignKey('langs.id', ondelete="CASCADE"), nullable=False, default=1)
     text = Column(String(255), nullable=False)
 
-    recipe: Mapped["Recipe"] = relationship(backref='translations')
+    recipe: Mapped["Recipe"] = relationship(backref='recipes')
     lang: Mapped["Lang"] = relationship(backref='translation_recipes')
 
 class TranslationStep(Base):
