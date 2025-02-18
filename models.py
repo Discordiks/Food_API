@@ -147,7 +147,7 @@ class TranslationCategory(Base):
     id_lang = Column(Integer, ForeignKey('langs.id', ondelete="CASCADE"), nullable=False, default=1)
     text = Column(String(255), nullable=False)
 
-    category: Mapped["Category"] = relationship(backref='categories')
+    category: Mapped["Category"] = relationship(backref='translation_categories')
     lang: Mapped["Lang"] = relationship(backref='translation_categories')
 
 class TranslationMealtime(Base):
@@ -157,7 +157,7 @@ class TranslationMealtime(Base):
     id_lang = Column(Integer, ForeignKey('langs.id', ondelete="CASCADE"), nullable=False, default=1)
     text = Column(String(255), nullable=False)
 
-    mealtime: Mapped["Mealtime"] = relationship(backref='mealtimes')
+    mealtime: Mapped["Mealtime"] = relationship(backref='translation_mealtimes')
     lang: Mapped["Lang"] = relationship(backref='translation_mealtimes')
 
 class TranslationIngredient(Base):
@@ -167,7 +167,7 @@ class TranslationIngredient(Base):
     id_lang = Column(Integer, ForeignKey('langs.id', ondelete="CASCADE"), nullable=False, default=1)
     text = Column(String(255), nullable=False)
 
-    ingredient: Mapped["Ingredient"] = relationship(backref='ingredients')
+    ingredient: Mapped["Ingredient"] = relationship(backref='translation_ingredients')
     lang: Mapped["Lang"] = relationship(backref='translation_ingredients')
 
 class TranslationSysOfCalc(Base):
@@ -177,7 +177,7 @@ class TranslationSysOfCalc(Base):
     id_lang = Column(Integer, ForeignKey('langs.id', ondelete="CASCADE"), nullable=False, default=1)
     text = Column(String(255), nullable=False)
 
-    sys_of_calc: Mapped["System_of_calculation"] = relationship(backref='system_of_calculations')
+    sys_of_calc: Mapped["System_of_calculation"] = relationship(backref='translation_sys_of_calcs')
     lang: Mapped["Lang"] = relationship(backref='translation_sys_of_calcs')
 
 class TranslationRecipe(Base):
@@ -197,7 +197,7 @@ class TranslationStep(Base):
     id_lang = Column(Integer, ForeignKey('langs.id', ondelete="CASCADE"), nullable=False, default=1)
     text = Column(String(255), nullable=False)
 
-    step: Mapped["Step"] = relationship(backref='steps')
+    step: Mapped["Step"] = relationship(backref='translation_steps')
     lang: Mapped["Lang"] = relationship(backref='translation_steps')
 
 

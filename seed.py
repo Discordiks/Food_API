@@ -243,12 +243,12 @@ with Session(bind=engine) as session:
     t40_ingr=models.TranslationIngredient(ingredient=i40, lang=l2, text="Potato")
 
     t1_soc=models.TranslationSysOfCalc(sys_of_calc=soc1, lang=l2, text="kg") #система исчисления на английском
-    t2_soc=models.TranslationSysOfCalc(sys_of_calc=soc1, lang=l2, text="g")
-    t3_soc=models.TranslationSysOfCalc(sys_of_calc=soc1, lang=l2, text="l")
-    t4_soc=models.TranslationSysOfCalc(sys_of_calc=soc1, lang=l2, text="ml")
-    t5_soc=models.TranslationSysOfCalc(sys_of_calc=soc1, lang=l2, text="pcs.")
-    t6_soc=models.TranslationSysOfCalc(sys_of_calc=soc1, lang=l2, text="tbsp.")
-    t7_soc=models.TranslationSysOfCalc(sys_of_calc=soc1, lang=l2, text="tsp.")
+    t2_soc=models.TranslationSysOfCalc(sys_of_calc=soc2, lang=l2, text="g")
+    t3_soc=models.TranslationSysOfCalc(sys_of_calc=soc3, lang=l2, text="l")
+    t4_soc=models.TranslationSysOfCalc(sys_of_calc=soc4, lang=l2, text="ml")
+    t5_soc=models.TranslationSysOfCalc(sys_of_calc=soc5, lang=l2, text="pcs.")
+    t6_soc=models.TranslationSysOfCalc(sys_of_calc=soc6, lang=l2, text="tbsp.")
+    t7_soc=models.TranslationSysOfCalc(sys_of_calc=soc7, lang=l2, text="tsp.")
 
     t1_r=models.TranslationRecipe(recipe=r1, lang=l2, text="Pizza") #рецепты на английском
     t2_r=models.TranslationRecipe(recipe=r2, lang=l2, text="Chocolate-covered strawberries")
