@@ -67,6 +67,16 @@ async def get_recipes_one(lang_code:str, id:int, db:Session=Depends(get_db)):
         recipes_one.raiting= recipes_one.likes * 2 - recipes_one.dizlikes
         if recipes_one.raiting < 0:
             recipes_one.raiting=0
+        #осуществление перевода
+        recipes_one.name = recipes_one.translation_recipes[0].text
+        recipes_one.category.name = recipes_one.category.translation_categories[0].text
+        for mealtime in recipes_one.mealtime:
+            mealtime.name=mealtime.translation_mealtimes[0].text
+        for step in recipes_one.steps:
+            step.info=step.translation_steps[0].text
+        for count in recipes_one.counts:
+            count.ingredient.name=count.ingredient.translation_ingredients[0].text
+            count.system_of_calc.name=count.system_of_calc.translation_sys_of_calcs[0].text
         return recipes_one
 
 #получение полного списка рецептов
