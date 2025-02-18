@@ -47,16 +47,27 @@ def for_recipes(recipe_db,db:Session=Depends(get_db)):
 
 #вывод одного рецепта
 @router.get("/{id}", response_model=pyd.RecipeScheme)
-async def get_recipes_one(id:int, db:Session=Depends(get_db)):
-    recipes_one=db.query(models.Recipe).filter(models.Recipe.id==id).filter(models.Recipe.published==True).first()
-    if not recipes_one:
-        raise HTTPException(status_code=404, detail="Рецепт не найден!")
-    recipes_one.likes=likes_recipes(id,db)
-    recipes_one.dizlikes=dizlikes_recipes(id,db)
-    recipes_one.raiting= recipes_one.likes * 2 - recipes_one.dizlikes
-    if recipes_one.raiting < 0:
-        recipes_one.raiting=0
-    return recipes_one
+async def get_recipes_one(lang_code:str, id:int, db:Session=Depends(get_db)):
+    if lang_code == "ru":
+        recipes_one=db.query(models.Recipe).filter(models.Recipe.id==id).filter(models.Recipe.published==True).first()
+        if not recipes_one:
+            raise HTTPException(status_code=404, detail="Рецепт не найден!")
+        recipes_one.likes=likes_recipes(id,db)
+        recipes_one.dizlikes=dizlikes_recipes(id,db)
+        recipes_one.raiting= recipes_one.likes * 2 - recipes_one.dizlikes
+        if recipes_one.raiting < 0:
+            recipes_one.raiting=0
+        return recipes_one
+    if lang_code == "en":
+        recipes_one=db.query(models.Recipe).filter(models.Recipe.id==id).filter(models.Recipe.published==True).first()
+        if not recipes_one:
+            raise HTTPException(status_code=404, detail="Рецепт не найден!")
+        recipes_one.likes=likes_recipes(id,db)
+        recipes_one.dizlikes=dizlikes_recipes(id,db)
+        recipes_one.raiting= recipes_one.likes * 2 - recipes_one.dizlikes
+        if recipes_one.raiting < 0:
+            recipes_one.raiting=0
+        return recipes_one
 
 #получение полного списка рецептов
 @router.get('/', response_model=List[pyd.RecipeScheme])
@@ -64,7 +75,8 @@ async def get_recipes(db:Session=Depends(get_db)):
     query = (
         select(models.Recipe)
         .options(
-        selectinload(models.Recipe.steps)
+        selectinload(models.Recipe.steps),
+        selectinload(models.Recipe.translation_recipes)
         ))
     res = db.execute(query)
     ress=res.scalars().all()

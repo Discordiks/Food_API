@@ -55,10 +55,6 @@ class Recipe(Base): #рецепты
         #back_populates="recipes",
         primaryjoin="and_(Recipe.id == Count.id_recipe)"
         )
-    translation: Mapped[list["TranslationRecipe"]]  = relationship(
-        #back_populates="recipes",
-        primaryjoin="and_(Recipe.id == TranslationRecipe.id_recipe)"
-        )
 
 class Ingredient(Base): #ингредиенты
     __tablename__ = "ingredients"
@@ -71,6 +67,11 @@ class System_of_calculation(Base): #система исчисления
 
     id = Column(Integer, primary_key=True) #первичный ключ
     name = Column(String(255), nullable=False)
+
+    #translation_sys: Mapped[list["TranslationSysOfCalc"]]  = relationship(
+        #back_populates="recipes",
+    #    primaryjoin="and_(System_of_calculation.id == TranslationSysOfCalc.id_sys_of_calc)"
+    #    )
 
 class Category(Base): #категории еды
     __tablename__ = "categories"
@@ -103,6 +104,11 @@ class Step(Base): #шаги рецепта
 
     #recipe=relationship("Recipe", backref="steps") #обратная связь #overlaps="steps"
     recipe: Mapped["Recipe"] = relationship(back_populates="steps")
+
+    #translation_step: Mapped[list["TranslationStep"]]  = relationship(
+        #back_populates="recipes",
+    #    primaryjoin="and_(Step.id == TranslationStep.id_step)"
+    #    )
 
 class Count(Base): #таблица, связывающая ингредиенты и рецепты
     __tablename__ = "counts"
@@ -181,7 +187,7 @@ class TranslationRecipe(Base):
     id_lang = Column(Integer, ForeignKey('langs.id', ondelete="CASCADE"), nullable=False, default=1)
     text = Column(String(255), nullable=False)
 
-    recipe: Mapped["Recipe"] = relationship(backref='recipes')
+    recipe: Mapped["Recipe"] = relationship(backref='translation_recipes')
     lang: Mapped["Lang"] = relationship(backref='translation_recipes')
 
 class TranslationStep(Base):
@@ -191,6 +197,7 @@ class TranslationStep(Base):
     id_lang = Column(Integer, ForeignKey('langs.id', ondelete="CASCADE"), nullable=False, default=1)
     text = Column(String(255), nullable=False)
 
-    step: Mapped["Step"] = relationship(backref='translations')
+    step: Mapped["Step"] = relationship(backref='steps')
     lang: Mapped["Lang"] = relationship(backref='translation_steps')
+
 
