@@ -105,11 +105,6 @@ class Step(Base): #шаги рецепта
     #recipe=relationship("Recipe", backref="steps") #обратная связь #overlaps="steps"
     recipe: Mapped["Recipe"] = relationship(back_populates="steps")
 
-    #translation_step: Mapped[list["TranslationStep"]]  = relationship(
-        #back_populates="recipes",
-    #    primaryjoin="and_(Step.id == TranslationStep.id_step)"
-    #    )
-
 class Count(Base): #таблица, связывающая ингредиенты и рецепты
     __tablename__ = "counts"
 

@@ -91,7 +91,7 @@ with Session(bind=engine) as session:
     s8=models.Step(number=8, info="Тесто обомните и раскатайте в тонкую круглую лепешку диаметром около 30 см.", recipe=r1)
     s9=models.Step(number=9, info="Перенесите лепёшку на застелённый пергаментом противень. Это нужно делать сразу, до того, как выложите начинку.", recipe=r1)
     s10=models.Step(number=10, info="Обильно смажьте тесто пряным томатным соусом. Сверху посыпьте тертым сыром. Поверх равномерно распределите кружочки пепперони.", recipe=r1)
-    s11=models.Step(number=11, info="Выпекайте пиццу в разогретой до 250°С духовке 8-10 минут. Точное время зависит от вашей духовки. Если есть возможность включить режим 'верх+низ+конвекция', используйте .", recipe=r1)
+    s11=models.Step(number=11, info="Выпекайте пиццу в разогретой до 250°С духовке 8-10 минут. Точное время зависит от вашей духовки. Если есть возможность включить режим 'верх+низ+конвекция', используйте его.", recipe=r1)
     #клубника в шоколаде
     s12=models.Step(number=1, info="Клубнику промойте под проточной холодной водой прямо в дуршлаге. Оставьте ягоды в нём же, чтобы стекла лишняя жидкость. Хвостики не отрывайте, за них будет удобно держать десерт при поедании.", recipe=r2)
     s13=models.Step(number=2, info="Затем разложите клубнику сохнуть на бумажное полотенце. Дополнительно оботрите каждую ягоду — лишняя влага помешает шоколаду покрыть клубнику равномерно. Разложите сухие ягоды на тарелку в один слой и уберите минут на 10-15 в морозилку — на охлажденных ягодах шоколадная глазурь застынет быстрее и не стечёт.", recipe=r2)
@@ -190,111 +190,220 @@ with Session(bind=engine) as session:
 
     #переводы
 
-    t1_cat=models.TranslationCategory(category=c1, lang=l2, text="Dessert") #категории на английском
-    t2_cat=models.TranslationCategory(category=c2, lang=l2, text="Meat")
-    t3_cat=models.TranslationCategory(category=c3, lang=l2, text="Soup")
-    t4_cat=models.TranslationCategory(category=c4, lang=l2, text="Fish")
-    t5_cat=models.TranslationCategory(category=c5, lang=l2, text="Drink")
-    t6_cat=models.TranslationCategory(category=c6, lang=l2, text="Main dish")
+    #английский перевод
+    t1_cat_en=models.TranslationCategory(category=c1, lang=l2, text="Dessert") #категории на английском
+    t2_cat_en=models.TranslationCategory(category=c2, lang=l2, text="Meat")
+    t3_cat_en=models.TranslationCategory(category=c3, lang=l2, text="Soup")
+    t4_cat_en=models.TranslationCategory(category=c4, lang=l2, text="Fish")
+    t5_cat_en=models.TranslationCategory(category=c5, lang=l2, text="Drink")
+    t6_cat_en=models.TranslationCategory(category=c6, lang=l2, text="Main dish")
 
-    t1_m=models.TranslationMealtime(mealtime=m1, lang=l2, text="Breakfast") #время приёма пищи на английском
-    t2_m=models.TranslationMealtime(mealtime=m2, lang=l2, text="Lunch")
-    t3_m=models.TranslationMealtime(mealtime=m3, lang=l2, text="Dinner")
+    t1_m_en=models.TranslationMealtime(mealtime=m1, lang=l2, text="Breakfast") #время приёма пищи на английском
+    t2_m_en=models.TranslationMealtime(mealtime=m2, lang=l2, text="Lunch")
+    t3_m_en=models.TranslationMealtime(mealtime=m3, lang=l2, text="Dinner")
 
-    t1_ingr=models.TranslationIngredient(ingredient=i1, lang=l2, text="Wheat flour") #ингредиенты на английском
-    t2_ingr=models.TranslationIngredient(ingredient=i2, lang=l2, text="Water")  #пицца
-    t3_ingr=models.TranslationIngredient(ingredient=i3, lang=l2, text="Dry yeast") 
-    t4_ingr=models.TranslationIngredient(ingredient=i4, lang=l2, text="Vegetable oil")
-    t5_ingr=models.TranslationIngredient(ingredient=i5, lang=l2, text="Sugar") 
-    t6_ingr=models.TranslationIngredient(ingredient=i6, lang=l2, text="Salt") 
-    t7_ingr=models.TranslationIngredient(ingredient=i7, lang=l2, text="Tomatoes") 
-    t8_ingr=models.TranslationIngredient(ingredient=i8, lang=l2, text="Mayonnaise") 
-    t9_ingr=models.TranslationIngredient(ingredient=i9, lang=l2, text="Ketchup") 
-    t10_ingr=models.TranslationIngredient(ingredient=i10, lang=l2, text="Garlic") 
-    t11_ingr=models.TranslationIngredient(ingredient=i11, lang=l2, text="Seasonings") 
-    t12_ingr=models.TranslationIngredient(ingredient=i12, lang=l2, text="Mozzarella cheese") 
-    t13_ingr=models.TranslationIngredient(ingredient=i13, lang=l2, text="Raw smoked sausage") 
-    t14_ingr=models.TranslationIngredient(ingredient=i14, lang=l2, text="Olive oil") 
-    t15_ingr=models.TranslationIngredient(ingredient=i15, lang=l2, text="Chocolate") #клубника в шоколаде
-    t16_ingr=models.TranslationIngredient(ingredient=i16, lang=l2, text="Strawberry") 
-    t17_ingr=models.TranslationIngredient(ingredient=i17, lang=l2, text="Pasta") #макароны с сыром
-    t18_ingr=models.TranslationIngredient(ingredient=i18, lang=l2, text="Buckwheat groats") #гречка с молоком
-    t19_ingr=models.TranslationIngredient(ingredient=i19, lang=l2, text="Milk") 
-    t20_ingr=models.TranslationIngredient(ingredient=i20, lang=l2, text="Butter") 
-    t21_ingr=models.TranslationIngredient(ingredient=i21, lang=l2, text="Raspberry") #чай с малиной
-    t22_ingr=models.TranslationIngredient(ingredient=i22, lang=l2, text="Black tea") 
-    t23_ingr=models.TranslationIngredient(ingredient=i23, lang=l2, text="Lime")
-    t24_ingr=models.TranslationIngredient(ingredient=i24, lang=l2, text="Mint") 
-    t25_ingr=models.TranslationIngredient(ingredient=i25, lang=l2, text="Sour cream") #манник
-    t26_ingr=models.TranslationIngredient(ingredient=i26, lang=l2, text="Semolina") 
-    t27_ingr=models.TranslationIngredient(ingredient=i27, lang=l2, text="Egg")
-    t28_ingr=models.TranslationIngredient(ingredient=i28, lang=l2, text="Pea") #добавочные
-    t29_ingr=models.TranslationIngredient(ingredient=i29, lang=l2, text="Cucumbers")
-    t30_ingr=models.TranslationIngredient(ingredient=i30, lang=l2, text="Salmon") 
-    t31_ingr=models.TranslationIngredient(ingredient=i31, lang=l2, text="Condensed milk")
-    t32_ingr=models.TranslationIngredient(ingredient=i32, lang=l2, text="Green tea") 
-    t33_ingr=models.TranslationIngredient(ingredient=i33, lang=l2, text="Chicken")
-    t34_ingr=models.TranslationIngredient(ingredient=i34, lang=l2, text="Veal") 
-    t35_ingr=models.TranslationIngredient(ingredient=i35, lang=l2, text="Sheepmeat")
-    t36_ingr=models.TranslationIngredient(ingredient=i36, lang=l2, text="Apple") 
-    t37_ingr=models.TranslationIngredient(ingredient=i37, lang=l2, text="Banana")
-    t38_ingr=models.TranslationIngredient(ingredient=i38, lang=l2, text="Pear") 
-    t39_ingr=models.TranslationIngredient(ingredient=i39, lang=l2, text="Cookie")
-    t40_ingr=models.TranslationIngredient(ingredient=i40, lang=l2, text="Potato")
+    t1_ingr_en=models.TranslationIngredient(ingredient=i1, lang=l2, text="Wheat flour") #ингредиенты на английском
+    t2_ingr_en=models.TranslationIngredient(ingredient=i2, lang=l2, text="Water")  #пицца
+    t3_ingr_en=models.TranslationIngredient(ingredient=i3, lang=l2, text="Dry yeast") 
+    t4_ingr_en=models.TranslationIngredient(ingredient=i4, lang=l2, text="Vegetable oil")
+    t5_ingr_en=models.TranslationIngredient(ingredient=i5, lang=l2, text="Sugar") 
+    t6_ingr_en=models.TranslationIngredient(ingredient=i6, lang=l2, text="Salt") 
+    t7_ingr_en=models.TranslationIngredient(ingredient=i7, lang=l2, text="Tomatoes") 
+    t8_ingr_en=models.TranslationIngredient(ingredient=i8, lang=l2, text="Mayonnaise") 
+    t9_ingr_en=models.TranslationIngredient(ingredient=i9, lang=l2, text="Ketchup") 
+    t10_ingr_en=models.TranslationIngredient(ingredient=i10, lang=l2, text="Garlic") 
+    t11_ingr_en=models.TranslationIngredient(ingredient=i11, lang=l2, text="Seasonings") 
+    t12_ingr_en=models.TranslationIngredient(ingredient=i12, lang=l2, text="Mozzarella cheese") 
+    t13_ingr_en=models.TranslationIngredient(ingredient=i13, lang=l2, text="Raw smoked sausage") 
+    t14_ingr_en=models.TranslationIngredient(ingredient=i14, lang=l2, text="Olive oil") 
+    t15_ingr_en=models.TranslationIngredient(ingredient=i15, lang=l2, text="Chocolate") #клубника в шоколаде
+    t16_ingr_en=models.TranslationIngredient(ingredient=i16, lang=l2, text="Strawberry") 
+    t17_ingr_en=models.TranslationIngredient(ingredient=i17, lang=l2, text="Pasta") #макароны с сыром
+    t18_ingr_en=models.TranslationIngredient(ingredient=i18, lang=l2, text="Buckwheat groats") #гречка с молоком
+    t19_ingr_en=models.TranslationIngredient(ingredient=i19, lang=l2, text="Milk") 
+    t20_ingr_en=models.TranslationIngredient(ingredient=i20, lang=l2, text="Butter") 
+    t21_ingr_en=models.TranslationIngredient(ingredient=i21, lang=l2, text="Raspberry") #чай с малиной
+    t22_ingr_en=models.TranslationIngredient(ingredient=i22, lang=l2, text="Black tea") 
+    t23_ingr_en=models.TranslationIngredient(ingredient=i23, lang=l2, text="Lime")
+    t24_ingr_en=models.TranslationIngredient(ingredient=i24, lang=l2, text="Mint") 
+    t25_ingr_en=models.TranslationIngredient(ingredient=i25, lang=l2, text="Sour cream") #манник
+    t26_ingr_en=models.TranslationIngredient(ingredient=i26, lang=l2, text="Semolina") 
+    t27_ingr_en=models.TranslationIngredient(ingredient=i27, lang=l2, text="Egg")
+    t28_ingr_en=models.TranslationIngredient(ingredient=i28, lang=l2, text="Pea") #добавочные
+    t29_ingr_en=models.TranslationIngredient(ingredient=i29, lang=l2, text="Cucumbers")
+    t30_ingr_en=models.TranslationIngredient(ingredient=i30, lang=l2, text="Salmon") 
+    t31_ingr_en=models.TranslationIngredient(ingredient=i31, lang=l2, text="Condensed milk")
+    t32_ingr_en=models.TranslationIngredient(ingredient=i32, lang=l2, text="Green tea") 
+    t33_ingr_en=models.TranslationIngredient(ingredient=i33, lang=l2, text="Chicken")
+    t34_ingr_en=models.TranslationIngredient(ingredient=i34, lang=l2, text="Veal") 
+    t35_ingr_en=models.TranslationIngredient(ingredient=i35, lang=l2, text="Sheepmeat")
+    t36_ingr_en=models.TranslationIngredient(ingredient=i36, lang=l2, text="Apple") 
+    t37_ingr_en=models.TranslationIngredient(ingredient=i37, lang=l2, text="Banana")
+    t38_ingr_en=models.TranslationIngredient(ingredient=i38, lang=l2, text="Pear") 
+    t39_ingr_en=models.TranslationIngredient(ingredient=i39, lang=l2, text="Cookie")
+    t40_ingr_en=models.TranslationIngredient(ingredient=i40, lang=l2, text="Potato")
 
-    t1_soc=models.TranslationSysOfCalc(sys_of_calc=soc1, lang=l2, text="kg") #система исчисления на английском
-    t2_soc=models.TranslationSysOfCalc(sys_of_calc=soc2, lang=l2, text="g")
-    t3_soc=models.TranslationSysOfCalc(sys_of_calc=soc3, lang=l2, text="l")
-    t4_soc=models.TranslationSysOfCalc(sys_of_calc=soc4, lang=l2, text="ml")
-    t5_soc=models.TranslationSysOfCalc(sys_of_calc=soc5, lang=l2, text="pcs.")
-    t6_soc=models.TranslationSysOfCalc(sys_of_calc=soc6, lang=l2, text="tbsp.")
-    t7_soc=models.TranslationSysOfCalc(sys_of_calc=soc7, lang=l2, text="tsp.")
+    t1_soc_en=models.TranslationSysOfCalc(sys_of_calc=soc1, lang=l2, text="kg") #система исчисления на английском
+    t2_soc_en=models.TranslationSysOfCalc(sys_of_calc=soc2, lang=l2, text="g")
+    t3_soc_en=models.TranslationSysOfCalc(sys_of_calc=soc3, lang=l2, text="l")
+    t4_soc_en=models.TranslationSysOfCalc(sys_of_calc=soc4, lang=l2, text="ml")
+    t5_soc_en=models.TranslationSysOfCalc(sys_of_calc=soc5, lang=l2, text="pcs.")
+    t6_soc_en=models.TranslationSysOfCalc(sys_of_calc=soc6, lang=l2, text="tbsp.")
+    t7_soc_en=models.TranslationSysOfCalc(sys_of_calc=soc7, lang=l2, text="tsp.")
 
-    t1_r=models.TranslationRecipe(recipe=r1, lang=l2, text="Pizza") #рецепты на английском
-    t2_r=models.TranslationRecipe(recipe=r2, lang=l2, text="Chocolate-covered strawberries")
-    t3_r=models.TranslationRecipe(recipe=r3, lang=l2, text="Macaroni and cheese")
-    t4_r=models.TranslationRecipe(recipe=r4, lang=l2, text="Buckwheat with milk") 
-    t5_r=models.TranslationRecipe(recipe=r5, lang=l2, text="Tea with raspberries")
-    t6_r=models.TranslationRecipe(recipe=r6, lang=l2, text="Semolina pie")
+    t1_r_en=models.TranslationRecipe(recipe=r1, lang=l2, text="Pizza") #рецепты на английском
+    t2_r_en=models.TranslationRecipe(recipe=r2, lang=l2, text="Chocolate-covered strawberries")
+    t3_r_en=models.TranslationRecipe(recipe=r3, lang=l2, text="Macaroni and cheese")
+    t4_r_en=models.TranslationRecipe(recipe=r4, lang=l2, text="Buckwheat with milk") 
+    t5_r_en=models.TranslationRecipe(recipe=r5, lang=l2, text="Tea with raspberries")
+    t6_r_en=models.TranslationRecipe(recipe=r6, lang=l2, text="Semolina pie")
 
     #пицца
-    t1_s=models.TranslationStep(step=s1, lang=l2, text="In warm water heated to 37-40 ° C, dissolve sugar. And then add the yeast and leave for 15 minutes until a fluffy cap appears. If the caps have not appeared, then either the yeast is spoiled, or the water has overheated and the dough will not rise. It needs to be kneaded again.")
-    t2_s=models.TranslationStep(step=s2, lang=l2, text="Sift the flour into a bowl. Add salt. Mix everything together and make a well in the center of the flour. Pour in the activated yeast and olive oil.") 
-    t3_s=models.TranslationStep(step=s3, lang=l2, text="Knead a smooth, elastic dough. Knead for about 7-10 minutes, until the dough begins to peel off from your hands. If necessary, you can add a little more olive oil. Cover the bowl with a towel and leave the dough in the heat for 45 minutes to rise.") 
-    t4_s=models.TranslationStep(step=s4, lang=l2, text="While the dough is rising, prepare the sauce. Combine tomatoes, ketchup, garlic cloves, seasonings and mayonnaise in a blender bowl. Whisk everything until smooth.") 
-    t5_s=models.TranslationStep(step=s5, lang=l2, text="Heat the vegetable oil in a frying pan over medium heat. Pour out the whipped tomato mixture. Simmer, stirring, for about 5 minutes until the liquid has evaporated and thickened.") 
-    t6_s=models.TranslationStep(step=s6, lang=l2, text="Remove the finished sauce from the heat and refrigerate.") 
-    t7_s=models.TranslationStep(step=s7, lang=l2, text="Now prepare the filling. Cut the sausage into thin slices. Grate the mozzarella on a coarse grater.") 
-    t8_s=models.TranslationStep(step=s8, lang=l2, text="Knead the dough and roll it into a thin round cake with a diameter of about 30 cm.") 
-    t9_s=models.TranslationStep(step=s9, lang=l2, text="Transfer the tortilla to a parchment-lined baking sheet. This should be done immediately, before you put the filling.") 
-    t10_s=models.TranslationStep(step=s10, lang=l2, text="Brush the dough liberally with the spicy tomato sauce. Sprinkle grated cheese on top. Spread the pepperoni slices evenly over the top.") 
-    t11_s=models.TranslationStep(step=s11, lang=l2, text="Bake the pizza in a preheated oven at 250°Bake in the oven for 8-10 minutes. The exact time depends on your oven. If it is possible to turn on the 'top+bottom+convection' mode, use it.") 
+    t1_s_en=models.TranslationStep(step=s1, lang=l2, text="In warm water heated to 37-40 ° C, dissolve sugar. And then add the yeast and leave for 15 minutes until a fluffy cap appears. If the caps have not appeared, then either the yeast is spoiled, or the water has overheated and the dough will not rise. It needs to be kneaded again.")
+    t2_s_en=models.TranslationStep(step=s2, lang=l2, text="Sift the flour into a bowl. Add salt. Mix everything together and make a well in the center of the flour. Pour in the activated yeast and olive oil.") 
+    t3_s_en=models.TranslationStep(step=s3, lang=l2, text="Knead a smooth, elastic dough. Knead for about 7-10 minutes, until the dough begins to peel off from your hands. If necessary, you can add a little more olive oil. Cover the bowl with a towel and leave the dough in the heat for 45 minutes to rise.") 
+    t4_s_en=models.TranslationStep(step=s4, lang=l2, text="While the dough is rising, prepare the sauce. Combine tomatoes, ketchup, garlic cloves, seasonings and mayonnaise in a blender bowl. Whisk everything until smooth.") 
+    t5_s_en=models.TranslationStep(step=s5, lang=l2, text="Heat the vegetable oil in a frying pan over medium heat. Pour out the whipped tomato mixture. Simmer, stirring, for about 5 minutes until the liquid has evaporated and thickened.") 
+    t6_s_en=models.TranslationStep(step=s6, lang=l2, text="Remove the finished sauce from the heat and refrigerate.") 
+    t7_s_en=models.TranslationStep(step=s7, lang=l2, text="Now prepare the filling. Cut the sausage into thin slices. Grate the mozzarella on a coarse grater.") 
+    t8_s_en=models.TranslationStep(step=s8, lang=l2, text="Knead the dough and roll it into a thin round cake with a diameter of about 30 cm.") 
+    t9_s_en=models.TranslationStep(step=s9, lang=l2, text="Transfer the tortilla to a parchment-lined baking sheet. This should be done immediately, before you put the filling.") 
+    t10_s_en=models.TranslationStep(step=s10, lang=l2, text="Brush the dough liberally with the spicy tomato sauce. Sprinkle grated cheese on top. Spread the pepperoni slices evenly over the top.") 
+    t11_s_en=models.TranslationStep(step=s11, lang=l2, text="Bake the pizza in a preheated oven at 250°Bake in the oven for 8-10 minutes. The exact time depends on your oven. If it is possible to turn on the 'top+bottom+convection' mode, use it.") 
     #клубника в шоколаде
-    t12_s=models.TranslationStep(step=s12, lang=l2, text="Rinse the strawberries under running cold water in a colander. Leave the berries in it to drain the excess liquid. Do not tear off the tails, they will be convenient to hold the dessert when eating.") 
-    t13_s=models.TranslationStep(step=s13, lang=l2, text="Then spread the strawberries to dry on a paper towel. Additionally, wipe each berry — excess moisture will prevent the chocolate from covering the strawberries evenly. Arrange the dried berries on a plate in a single layer and put them in the freezer for 10-15 minutes — the chocolate glaze will harden faster on the cooled berries and will not drain.") 
-    t14_s=models.TranslationStep(step=s14, lang=l2, text="Put the chocolate in the microwave at maximum power, set the time to 20 seconds (or more, depending on the model and power).") 
-    t15_s=models.TranslationStep(step=s15, lang=l2, text="Stir the chocolate until smooth. Pour vegetable oil into it — it will make the glaze more liquid and easier to use.") 
-    t16_s=models.TranslationStep(step=s16, lang=l2, text="Remove the strawberries from the freezer. Place the berries on a wooden skewer. Dip it in the melted chocolate, the tip and tail can be left bare. Spread the glazed berries on a board covered with parchment.") 
-    t17_s=models.TranslationStep(step=s17, lang=l2, text="Decorate the berries with stripes of contrasting chocolate. You can also sprinkle them with crushed nuts, coconut chips, freeze-dried berries, and confectionery sprinkles. Put the strawberry board in the refrigerator to fully stabilize the glaze (10 minutes is enough).") 
+    t12_s_en=models.TranslationStep(step=s12, lang=l2, text="Rinse the strawberries under running cold water in a colander. Leave the berries in it to drain the excess liquid. Do not tear off the tails, they will be convenient to hold the dessert when eating.") 
+    t13_s_en=models.TranslationStep(step=s13, lang=l2, text="Then spread the strawberries to dry on a paper towel. Additionally, wipe each berry — excess moisture will prevent the chocolate from covering the strawberries evenly. Arrange the dried berries on a plate in a single layer and put them in the freezer for 10-15 minutes — the chocolate glaze will harden faster on the cooled berries and will not drain.") 
+    t14_s_en=models.TranslationStep(step=s14, lang=l2, text="Put the chocolate in the microwave at maximum power, set the time to 20 seconds (or more, depending on the model and power).") 
+    t15_s_en=models.TranslationStep(step=s15, lang=l2, text="Stir the chocolate until smooth. Pour vegetable oil into it — it will make the glaze more liquid and easier to use.") 
+    t16_s_en=models.TranslationStep(step=s16, lang=l2, text="Remove the strawberries from the freezer. Place the berries on a wooden skewer. Dip it in the melted chocolate, the tip and tail can be left bare. Spread the glazed berries on a board covered with parchment.") 
+    t17_s_en=models.TranslationStep(step=s17, lang=l2, text="Decorate the berries with stripes of contrasting chocolate. You can also sprinkle them with crushed nuts, coconut chips, freeze-dried berries, and confectionery sprinkles. Put the strawberry board in the refrigerator to fully stabilize the glaze (10 minutes is enough).") 
     #макароны с сыром
-    t18_s=models.TranslationStep(step=s18, lang=l2, text="Boil the pasta in a saucepan according to the instructions on the package, be sure to add salt to the water well.") 
-    t19_s=models.TranslationStep(step=s19, lang=l2, text="Grate all the cheese into a heated frying pan and add a spoonful of seasonings to it. Stir well with a spatula until all the cheese has melted.") 
-    t20_s=models.TranslationStep(step=s20, lang=l2, text="Put the boiled pasta in the cooked cheese. Mix it up.")
+    t18_s_en=models.TranslationStep(step=s18, lang=l2, text="Boil the pasta in a saucepan according to the instructions on the package, be sure to add salt to the water well.") 
+    t19_s_en=models.TranslationStep(step=s19, lang=l2, text="Grate all the cheese into a heated frying pan and add a spoonful of seasonings to it. Stir well with a spatula until all the cheese has melted.") 
+    t20_s_en=models.TranslationStep(step=s20, lang=l2, text="Put the boiled pasta in the cooked cheese. Mix it up.")
     #гречка с молоком 
-    t21_s=models.TranslationStep(step=s21, lang=l2, text="Pour boiling water over buckwheat and add salt. Bring to a boil. Turn down the heat to a minimum, cover with a lid.") 
-    t22_s=models.TranslationStep(step=s22, lang=l2, text="Cook porridge until tender, about 25-30 minutes.") 
-    t23_s=models.TranslationStep(step=s23, lang=l2, text="Put the finished porridge in plates and pour milk over it. Add a piece of butter to the buckwheat porridge with milk.") 
+    t21_s_en=models.TranslationStep(step=s21, lang=l2, text="Pour boiling water over buckwheat and add salt. Bring to a boil. Turn down the heat to a minimum, cover with a lid.") 
+    t22_s_en=models.TranslationStep(step=s22, lang=l2, text="Cook porridge until tender, about 25-30 minutes.") 
+    t23_s_en=models.TranslationStep(step=s23, lang=l2, text="Put the finished porridge in plates and pour milk over it. Add a piece of butter to the buckwheat porridge with milk.") 
     #чай с малиной
-    t24_s=models.TranslationStep(step=s24, lang=l2, text="Brew black tea, cool. And pour it into a jug.") 
-    t25_s=models.TranslationStep(step=s25, lang=l2, text="Wash the raspberries well and pour them into the iced tea, add water.")
-    t26_s=models.TranslationStep(step=s26, lang=l2, text="Cut the lime into small circles and add it to the jug, add sugar to taste.") 
-    t27_s=models.TranslationStep(step=s27, lang=l2, text="Decorate a refreshing drink with mint leaves.")
+    t24_s_en=models.TranslationStep(step=s24, lang=l2, text="Brew black tea, cool. And pour it into a jug.") 
+    t25_s_en=models.TranslationStep(step=s25, lang=l2, text="Wash the raspberries well and pour them into the iced tea, add water.")
+    t26_s_en=models.TranslationStep(step=s26, lang=l2, text="Cut the lime into small circles and add it to the jug, add sugar to taste.") 
+    t27_s_en=models.TranslationStep(step=s27, lang=l2, text="Decorate a refreshing drink with mint leaves.")
     #манник
-    t28_s=models.TranslationStep(step=s28, lang=l2, text="In a bowl, combine sour cream at room temperature and semolina. Mix everything well until smooth and leave the mass for 30 minutes so that the cereal swells. It is very important that the semolina is properly swollen. After all, it depends on how soft and tender the pie will turn out.") 
-    t29_s=models.TranslationStep(step=s29, lang=l2, text="In another bowl, combine the eggs with sugar and a pinch of salt. Beat everything with a mixer until fluffy for about 2 minutes. You should get a lush mass with lots of small air bubbles. The lightness of the finished pastry depends on how you beat the eggs.")
-    t30_s=models.TranslationStep(step=s30, lang=l2, text="Add the semolina swollen in sour cream to the egg mixture and beat everything again with a mixer. There should be no lumps left in the mass.") 
-    t31_s=models.TranslationStep(step=s31, lang=l2, text="Add the sifted flour and mix the dough again until smooth with a mixer.")
-    t32_s=models.TranslationStep(step=s32, lang=l2, text="Pour the finished dough into a baking dish lined with parchment and greased with vegetable oil (Ø 18-20 cm). Place the mannikin in a preheated 180°C oven for about 40-50 minutes.")
+    t28_s_en=models.TranslationStep(step=s28, lang=l2, text="In a bowl, combine sour cream at room temperature and semolina. Mix everything well until smooth and leave the mass for 30 minutes so that the cereal swells. It is very important that the semolina is properly swollen. After all, it depends on how soft and tender the pie will turn out.") 
+    t29_s_en=models.TranslationStep(step=s29, lang=l2, text="In another bowl, combine the eggs with sugar and a pinch of salt. Beat everything with a mixer until fluffy for about 2 minutes. You should get a lush mass with lots of small air bubbles. The lightness of the finished pastry depends on how you beat the eggs.")
+    t30_s_en=models.TranslationStep(step=s30, lang=l2, text="Add the semolina swollen in sour cream to the egg mixture and beat everything again with a mixer. There should be no lumps left in the mass.") 
+    t31_s_en=models.TranslationStep(step=s31, lang=l2, text="Add the sifted flour and mix the dough again until smooth with a mixer.")
+    t32_s_en=models.TranslationStep(step=s32, lang=l2, text="Pour the finished dough into a baking dish lined with parchment and greased with vegetable oil (Ø 18-20 cm). Place the mannikin in a preheated 180°C oven for about 40-50 minutes.")
+
+    #французский перевод
+    t1_cat_fr=models.TranslationCategory(category=c1, lang=l3, text="Dessert") #категории на французском
+    t2_cat_fr=models.TranslationCategory(category=c2, lang=l3, text="Viande")
+    t3_cat_fr=models.TranslationCategory(category=c3, lang=l3, text="Soupe")
+    t4_cat_fr=models.TranslationCategory(category=c4, lang=l3, text="Poisson")
+    t5_cat_fr=models.TranslationCategory(category=c5, lang=l3, text="Boisson")
+    t6_cat_fr=models.TranslationCategory(category=c6, lang=l3, text="L'essentiel")
+
+    t1_m_fr=models.TranslationMealtime(mealtime=m1, lang=l3, text="Petit Déjeuner") #время приёма пищи на французском
+    t2_m_fr=models.TranslationMealtime(mealtime=m2, lang=l3, text="Déjeuner")
+    t3_m_fr=models.TranslationMealtime(mealtime=m3, lang=l3, text="Dinner")
+
+    t1_ingr_fr=models.TranslationIngredient(ingredient=i1, lang=l3, text="Farine de froment") #ингредиенты на французском
+    t2_ingr_fr=models.TranslationIngredient(ingredient=i2, lang=l3, text="Eau")  #пицца
+    t3_ingr_fr=models.TranslationIngredient(ingredient=i3, lang=l3, text="Levure sèche") 
+    t4_ingr_fr=models.TranslationIngredient(ingredient=i4, lang=l3, text="Huile végétale")
+    t5_ingr_fr=models.TranslationIngredient(ingredient=i5, lang=l3, text="Sucre") 
+    t6_ingr_fr=models.TranslationIngredient(ingredient=i6, lang=l3, text="Sel") 
+    t7_ingr_fr=models.TranslationIngredient(ingredient=i7, lang=l3, text="Tomates") 
+    t8_ingr_fr=models.TranslationIngredient(ingredient=i8, lang=l3, text="Mayonnaise") 
+    t9_ingr_fr=models.TranslationIngredient(ingredient=i9, lang=l3, text="Ketchup") 
+    t10_ingr_fr=models.TranslationIngredient(ingredient=i10, lang=l3, text="Ail") 
+    t11_ingr_fr=models.TranslationIngredient(ingredient=i11, lang=l3, text="Assaisonnements") 
+    t12_ingr_fr=models.TranslationIngredient(ingredient=i12, lang=l3, text="Fromage Mozzarella") 
+    t13_ingr_fr=models.TranslationIngredient(ingredient=i13, lang=l3, text="Saucisse fumée") 
+    t14_ingr_fr=models.TranslationIngredient(ingredient=i14, lang=l3, text="Huile d'olive") 
+    t15_ingr_fr=models.TranslationIngredient(ingredient=i15, lang=l3, text="Chocolat") #клубника в шоколаде
+    t16_ingr_fr=models.TranslationIngredient(ingredient=i16, lang=l3, text="Fraise") 
+    t17_ingr_fr=models.TranslationIngredient(ingredient=i17, lang=l3, text="Macaroni") #макароны с сыром
+    t18_ingr_fr=models.TranslationIngredient(ingredient=i18, lang=l3, text="Sarrasin") #гречка с молоком
+    t19_ingr_fr=models.TranslationIngredient(ingredient=i19, lang=l3, text="Lait")
+    t20_ingr_fr=models.TranslationIngredient(ingredient=i20, lang=l3, text="Beurre") 
+    t21_ingr_fr=models.TranslationIngredient(ingredient=i21, lang=l3, text="Framboise") #чай с малиной
+    t22_ingr_fr=models.TranslationIngredient(ingredient=i22, lang=l3, text="Thé noir") 
+    t23_ingr_fr=models.TranslationIngredient(ingredient=i23, lang=l3, text="Lime")
+    t24_ingr_fr=models.TranslationIngredient(ingredient=i24, lang=l3, text="Menthe") 
+    t25_ingr_fr=models.TranslationIngredient(ingredient=i25, lang=l3, text="Crème fraîche") #манник
+    t26_ingr_fr=models.TranslationIngredient(ingredient=i26, lang=l3, text="Semoule") 
+    t27_ingr_fr=models.TranslationIngredient(ingredient=i27, lang=l3, text="Œuf")
+    t28_ingr_fr=models.TranslationIngredient(ingredient=i28, lang=l3, text="Pois") #добавочные
+    t29_ingr_fr=models.TranslationIngredient(ingredient=i29, lang=l3, text="Concombres")
+    t30_ingr_fr=models.TranslationIngredient(ingredient=i30, lang=l3, text="Saumon") 
+    t31_ingr_fr=models.TranslationIngredient(ingredient=i31, lang=l3, text="Lait condensé")
+    t32_ingr_fr=models.TranslationIngredient(ingredient=i32, lang=l3, text="Thé vert") 
+    t33_ingr_fr=models.TranslationIngredient(ingredient=i33, lang=l3, text="Poulet")
+    t34_ingr_fr=models.TranslationIngredient(ingredient=i34, lang=l3, text="Veau") 
+    t35_ingr_fr=models.TranslationIngredient(ingredient=i35, lang=l3, text="Viande de mouton")
+    t36_ingr_fr=models.TranslationIngredient(ingredient=i36, lang=l3, text="Pomme") 
+    t37_ingr_fr=models.TranslationIngredient(ingredient=i37, lang=l3, text="Banane")
+    t38_ingr_fr=models.TranslationIngredient(ingredient=i38, lang=l3, text="Poire") 
+    t39_ingr_fr=models.TranslationIngredient(ingredient=i39, lang=l3, text="Biscuit")
+    t40_ingr_fr=models.TranslationIngredient(ingredient=i40, lang=l3, text="Pommes de terre")
+
+    t1_soc_fr=models.TranslationSysOfCalc(sys_of_calc=soc1, lang=l3, text="kg") #система исчисления на французском
+    t2_soc_fr=models.TranslationSysOfCalc(sys_of_calc=soc2, lang=l3, text="g")
+    t3_soc_fr=models.TranslationSysOfCalc(sys_of_calc=soc3, lang=l3, text="l")
+    t4_soc_fr=models.TranslationSysOfCalc(sys_of_calc=soc4, lang=l3, text="ml")
+    t5_soc_fr=models.TranslationSysOfCalc(sys_of_calc=soc5, lang=l3, text="pce")
+    t6_soc_fr=models.TranslationSysOfCalc(sys_of_calc=soc6, lang=l3, text="c. à s.")
+    t7_soc_fr=models.TranslationSysOfCalc(sys_of_calc=soc7, lang=l3, text="c. à c.")
+
+    t1_r_fr=models.TranslationRecipe(recipe=r1, lang=l3, text="Pizza") #рецепты на французском 
+    t2_r_fr=models.TranslationRecipe(recipe=r2, lang=l3, text="Fraises au chocolat")
+    t3_r_fr=models.TranslationRecipe(recipe=r3, lang=l3, text="Macaroni au fromage")
+    t4_r_fr=models.TranslationRecipe(recipe=r4, lang=l3, text="Sarrasin au lait") 
+    t5_r_fr=models.TranslationRecipe(recipe=r5, lang=l3, text="Thé aux framboises")
+    t6_r_fr=models.TranslationRecipe(recipe=r6, lang=l3, text="Glycérie")
+
+    #пицца
+    t1_s_fr=models.TranslationStep(step=s1, lang=l3, text="Dans l'eau tiède, chauffée à 37-40°C, dissoudre le sucre. Et puis versez la levure et laissez-la pendant 15 minutes jusqu'à ce qu'un bonnet luxuriant apparaisse. Si les bouchons ne sont pas apparus, la levure est gâtée ou l'eau surchauffée et la pâte ne Monte pas. Il faut pétrir à nouveau.")
+    t2_s_fr=models.TranslationStep(step=s2, lang=l3, text="Dans un bol, tamiser la farine. Verser le sel. Mélangez le tout et faites une dépression au centre de la farine. Versez-y la levure activée et l'huile d'olive.") 
+    t3_s_fr=models.TranslationStep(step=s3, lang=l3, text="Pétrir une pâte élastique et homogène. Pétrir environ 7-10 minutes, jusqu'à ce que la pâte commence à se détacher des mains. Si nécessaire, vous pouvez ajouter un peu plus d'huile d'olive. Couvrir le bol avec une serviette et laisser la pâte 45 minutes au chaud pour lever.") 
+    t4_s_fr=models.TranslationStep(step=s4, lang=l3, text="Pendant que la pâte Monte, préparez la sauce. Dans le bol du mélangeur, mélanger les tomates, le ketchup, les gousses d'ail, les assaisonnements et la mayonnaise. Fouetter le tout jusqu'à consistance lisse.") 
+    t5_s_fr=models.TranslationStep(step=s5, lang=l3, text="Dans une poêle à feu moyen, chauffer l'huile végétale. Verser le mélange de tomates fouettées. Laisser mijoter, en remuant, environ 5 minutes jusqu'à ce que le liquide s'évapore et soit épais.") 
+    t6_s_fr=models.TranslationStep(step=s6, lang=l3, text="Retirer la sauce prête du feu et réfrigérer.") 
+    t7_s_fr=models.TranslationStep(step=s7, lang=l3, text="Maintenant, préparez la farce. Couper la saucisse en fines tranches. Râper la mozzarella sur une grande râpe.") 
+    t8_s_fr=models.TranslationStep(step=s8, lang=l3, text="La pâte est écrasée et roulée en une fine tortilla ronde d'environ 30 cm de diamètre.") 
+    t9_s_fr=models.TranslationStep(step=s9, lang=l3, text="Transférer la tortilla sur une plaque à pâtisserie recouverte de parchemin. Cela doit être fait immédiatement, avant de disposer le remplissage.") 
+    t10_s_fr=models.TranslationStep(step=s10, lang=l3, text="Graisser abondamment la pâte avec la sauce tomate épicée. Saupoudrer de fromage râpé sur le dessus. Sur le dessus, répartir uniformément les cercles de pepperoni.") 
+    t11_s_fr=models.TranslationStep(step=s11, lang=l3, text="Cuire la pizza dans un four préchauffé à 250 ° C pendant 8-10 minutes. L'heure exacte dépend de votre four. S'il est possible d'activer le mode 'haut+bas+convection', utilisez-le.") 
+    #клубника в шоколаде
+    t12_s_fr=models.TranslationStep(step=s12, lang=l3, text="Rincer les fraises sous l'eau froide courante directement dans une passoire. Laissez les baies dans le même verre à l'excès de liquide. Les queues ne se détachent pas, elles seront pratiques pour tenir le dessert en mangeant.") 
+    t13_s_fr=models.TranslationStep(step=s13, lang=l3, text="Ensuite, étalez les fraises sur une serviette en papier. En outre, essuyez chaque baie — l'excès d'humidité empêchera le chocolat de couvrir les fraises uniformément. Étalez les baies sèches sur une assiette en une seule couche et retirez les minutes 10-15 dans le congélateur — sur les baies refroidies, le glaçage au chocolat gèlera plus rapidement et ne s'écoulera pas.") 
+    t14_s_fr=models.TranslationStep(step=s14, lang=l3, text="Mettez le chocolat au micro-ondes à la puissance maximale, le temps est réglé sur 20 secondes (ou plus, selon le modèle et la puissance).") 
+    t15_s_fr=models.TranslationStep(step=s15, lang=l3, text="Incorporer le chocolat jusqu'à consistance lisse. Versez — y de l'huile végétale-elle rendra le glaçage plus liquide et plus facile à travailler.") 
+    t16_s_fr=models.TranslationStep(step=s16, lang=l3, text="Sortez les fraises du congélateur. Plantez les baies sur une brochette en bois. Trempez-le dans du chocolat fondu, la pointe avec la queue peut être laissée nue. Étaler les baies vitrées sur une planche recouverte de parchemin.") 
+    t17_s_fr=models.TranslationStep(step=s17, lang=l3, text="Décorez les baies avec des bandes de chocolat de couleur contrastante. Vous pouvez également les saupoudrer de noix concassées, de copeaux de noix de coco, de baies lyophilisées, de pépites de confiserie. Retirez la planche avec les fraises dans le réfrigérateur pour stabiliser complètement le glaçage (10 minutes suffisent).") 
+    #макароны с сыром
+    t18_s_fr=models.TranslationStep(step=s18, lang=l3, text="Faire bouillir les pâtes dans une casserole selon les instructions sur l'emballage, assurez-vous de bien Saler l'eau.") 
+    t19_s_fr=models.TranslationStep(step=s19, lang=l3, text="Râpez tout le fromage dans une poêle chauffée et ajoutez-y une cuillerée d'assaisonnements. Remuez bien avec une spatule jusqu'à ce que tout le fromage soit fondu.") 
+    t20_s_fr=models.TranslationStep(step=s20, lang=l3, text="Mettez les pâtes bouillies dans le fromage cuit. Mélangez.")
+    #гречка с молоком 
+    t21_s_fr=models.TranslationStep(step=s21, lang=l3, text="Sarrasin verser de l'eau bouillante, sel. Porter à ébullition. Réduire le feu au minimum, couvrir.") 
+    t22_s_fr=models.TranslationStep(step=s22, lang=l3, text="Cuire la bouillie jusqu'à tendreté, environ 25-30 minutes.") 
+    t23_s_fr=models.TranslationStep(step=s23, lang=l3, text="Mettez la bouillie prête dans des assiettes et versez le lait. Ajouter un morceau de beurre à la bouillie de sarrasin avec du lait.") 
+    #чай с малиной
+    t24_s_fr=models.TranslationStep(step=s24, lang=l3, text="Infuser le thé noir, refroidir. Et verser dans une cruche.") 
+    t25_s_fr=models.TranslationStep(step=s25, lang=l3, text="Rincez bien les framboises et versez-les dans du thé refroidi, ajoutez de l'eau.")
+    t26_s_fr=models.TranslationStep(step=s26, lang=l3, text="Couper le citron vert en tranches et ajouter au pichet, mettre le sucre au goût.") 
+    t27_s_fr=models.TranslationStep(step=s27, lang=l3, text="Décorez la boisson rafraîchissante avec des feuilles de menthe.")
+    #манник
+    t28_s_fr=models.TranslationStep(step=s28, lang=l3, text="Dans un bol, mélanger la crème sure à température ambiante et la semoule. Bien mélanger jusqu'à consistance lisse et laisser la masse pendant 30 minutes pour que le croup gonfle. Il est très important que la semoule gonfle correctement. Après tout, cela dépend de la douceur et de la douceur du gâteau.") 
+    t29_s_fr=models.TranslationStep(step=s29, lang=l3, text="Dans un autre bol, mélanger les œufs avec le sucre et une pincée de sel. Fouetter le tout avec un mélangeur jusqu'à ce qu'il soit luxuriant pendant environ 2 minutes. Devrait obtenir une masse luxuriante avec beaucoup de petites bulles d'air. De la façon dont vous soulevez les œufs, dépend de la légèreté de la cuisson finie.")
+    t30_s_fr=models.TranslationStep(step=s30, lang=l3, text="Ajouter la semoule gonflée dans la crème sure au mélange d'œufs et fouetter à nouveau le tout avec un mélangeur. Dans la masse, il ne devrait pas y avoir de grumeaux.") 
+    t31_s_fr=models.TranslationStep(step=s31, lang=l3, text="Verser la farine tamisée et mélanger à nouveau la pâte jusqu'à consistance lisse avec un mélangeur.")
+    t32_s_fr=models.TranslationStep(step=s32, lang=l3, text="Verser la pâte finie dans un plat allant au four recouvert de parchemin et graissé avec de l'huile végétale (Ø 18-20 cm). Mettez le mannik dans un four préchauffé à 180°C pendant environ 40-50 minutes.")
+
 
     session.add_all([u1,u2,u3,u4,u5,
                     c1,c2,c3,c4,c5,c6,
@@ -310,16 +419,28 @@ with Session(bind=engine) as session:
                     count31,count32,count33,count34,count35,count36,
                     score1,score2,score3,score4,score5,score6,score7,score8,
                     l1,l2,l3,
-                    t1_cat,t2_cat,t3_cat,t4_cat,t5_cat,t6_cat,
-                    #переводы
-                    t1_m,t2_m,t3_m,
-                    t1_ingr,t2_ingr,t3_ingr,t4_ingr,t5_ingr,t6_ingr,t7_ingr,t8_ingr,t9_ingr,t10_ingr,
-                    t11_ingr,t12_ingr,t13_ingr,t14_ingr,t15_ingr,t16_ingr,t17_ingr,t18_ingr,t19_ingr,t20_ingr,
-                    t21_ingr,t22_ingr,t23_ingr,t24_ingr,t25_ingr,t26_ingr,t27_ingr,t28_ingr,t29_ingr,t30_ingr,
-                    t31_ingr,t32_ingr,t33_ingr,t34_ingr,t35_ingr,t36_ingr,t37_ingr,t38_ingr,t39_ingr,t40_ingr,
-                    t1_soc,t2_soc,t3_soc,t4_soc,t5_soc,t6_soc,t7_soc,
-                    t1_s,t2_s,t3_s,t4_s,t5_s,t6_s,t7_s,t8_s,t9_s,t10_s,
-                    t11_s,t12_s,t13_s,t14_s,t15_s,t16_s,t17_s,t18_s,t19_s,t20_s,
-                    t21_s,t22_s,t23_s,t24_s,t25_s,t26_s,t27_s,t28_s,t29_s,t30_s,t31_s,t32_s])
+                    #английский перевод
+                    t1_cat_en, t2_cat_en, t3_cat_en, t4_cat_en, t5_cat_en, t6_cat_en,
+                    t1_m_en, t2_m_en, t3_m_en,
+                    t1_ingr_en, t2_ingr_en, t3_ingr_en, t4_ingr_en, t5_ingr_en, t6_ingr_en, t7_ingr_en, t8_ingr_en, t9_ingr_en, t10_ingr_en,
+                    t11_ingr_en, t12_ingr_en, t13_ingr_en, t14_ingr_en, t15_ingr_en, t16_ingr_en, t17_ingr_en, t18_ingr_en, t19_ingr_en, t20_ingr_en,
+                    t21_ingr_en, t22_ingr_en, t23_ingr_en, t24_ingr_en, t25_ingr_en, t26_ingr_en, t27_ingr_en, t28_ingr_en, t29_ingr_en, t30_ingr_en,
+                    t31_ingr_en, t32_ingr_en, t33_ingr_en, t34_ingr_en, t35_ingr_en, t36_ingr_en, t37_ingr_en, t38_ingr_en, t39_ingr_en, t40_ingr_en,
+                    t1_soc_en, t2_soc_en, t3_soc_en, t4_soc_en, t5_soc_en, t6_soc_en, t7_soc_en,
+                    t1_s_en, t2_s_en, t3_s_en, t4_s_en, t5_s_en, t6_s_en, t7_s_en, t8_s_en, t9_s_en, t10_s_en,
+                    t11_s_en, t12_s_en, t13_s_en, t14_s_en, t15_s_en, t16_s_en, t17_s_en, t18_s_en, t19_s_en, t20_s_en,
+                    t21_s_en, t22_s_en, t23_s_en, t24_s_en, t25_s_en, t26_s_en, t27_s_en, t28_s_en, t29_s_en, t30_s_en, t31_s_en, t32_s_en,
+                    #французский перевод
+                    t1_cat_fr, t2_cat_fr, t3_cat_fr, t4_cat_fr, t5_cat_fr, t6_cat_fr, 
+                    t1_m_fr, t2_m_fr, t3_m_fr,
+                    t1_ingr_fr, t2_ingr_fr, t3_ingr_fr, t4_ingr_fr, t5_ingr_fr, t6_ingr_fr, t7_ingr_fr, t8_ingr_fr, t9_ingr_fr, t10_ingr_fr,
+                    t11_ingr_fr, t12_ingr_fr, t13_ingr_fr, t14_ingr_fr, t15_ingr_fr, t16_ingr_fr, t17_ingr_fr, t18_ingr_fr, t19_ingr_fr, t20_ingr_fr,
+                    t21_ingr_fr, t22_ingr_fr, t23_ingr_fr, t24_ingr_fr, t25_ingr_fr, t26_ingr_fr, t27_ingr_fr, t28_ingr_fr, t29_ingr_fr, t30_ingr_fr,
+                    t31_ingr_fr, t32_ingr_fr, t33_ingr_fr, t34_ingr_fr, t35_ingr_fr, t36_ingr_fr, t37_ingr_fr, t38_ingr_fr, t39_ingr_fr, t40_ingr_fr,
+                    t1_soc_fr, t2_soc_fr, t3_soc_fr, t4_soc_fr, t5_soc_fr, t6_soc_fr, t7_soc_fr,
+                    t1_s_fr, t2_s_fr, t3_s_fr, t4_s_fr, t5_s_fr, t6_s_fr, t7_s_fr, t8_s_fr, t9_s_fr, t10_s_fr,
+                    t11_s_fr, t12_s_fr, t13_s_fr, t14_s_fr, t15_s_fr, t16_s_fr, t17_s_fr, t18_s_fr, t19_s_fr, t20_s_fr,
+                    t21_s_fr, t22_s_fr, t23_s_fr, t24_s_fr, t25_s_fr, t26_s_fr, t27_s_fr, t28_s_fr, t29_s_fr, t30_s_fr, t31_s_fr, t32_s_fr
+                    ])
     session.commit()
 

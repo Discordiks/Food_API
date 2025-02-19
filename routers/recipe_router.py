@@ -48,35 +48,39 @@ def for_recipes(recipe_db,db:Session=Depends(get_db)):
 #вывод одного рецепта
 @router.get("/{id}", response_model=pyd.RecipeScheme)
 async def get_recipes_one(lang_code:str, id:int, db:Session=Depends(get_db)):
-    if lang_code == "ru":
-        recipes_one=db.query(models.Recipe).filter(models.Recipe.id==id).filter(models.Recipe.published==True).first()
-        if not recipes_one:
-            raise HTTPException(status_code=404, detail="Рецепт не найден!")
-        recipes_one.likes=likes_recipes(id,db)
-        recipes_one.dizlikes=dizlikes_recipes(id,db)
-        recipes_one.raiting= recipes_one.likes * 2 - recipes_one.dizlikes
-        if recipes_one.raiting < 0:
-            recipes_one.raiting=0
+    recipes_one=db.query(models.Recipe).filter(models.Recipe.id==id).filter(models.Recipe.published==True).first()
+    if not recipes_one:
+        raise HTTPException(status_code=404, detail="Рецепт не найден!")
+    recipes_one.likes=likes_recipes(id,db)
+    recipes_one.dizlikes=dizlikes_recipes(id,db)
+    recipes_one.raiting= recipes_one.likes * 2 - recipes_one.dizlikes
+    if recipes_one.raiting < 0:
+        recipes_one.raiting=0
+    if lang_code == "ru" or lang_code == "" or lang_code == None:
         return recipes_one
-    if lang_code == "en":
-        recipes_one=db.query(models.Recipe).filter(models.Recipe.id==id).filter(models.Recipe.published==True).first()
-        if not recipes_one:
-            raise HTTPException(status_code=404, detail="Рецепт не найден!")
-        recipes_one.likes=likes_recipes(id,db)
-        recipes_one.dizlikes=dizlikes_recipes(id,db)
-        recipes_one.raiting= recipes_one.likes * 2 - recipes_one.dizlikes
-        if recipes_one.raiting < 0:
-            recipes_one.raiting=0
-        #осуществление перевода
-        recipes_one.name = recipes_one.translation_recipes[0].text
-        recipes_one.category.name = recipes_one.category.translation_categories[0].text
+    if lang_code == "en" or lang_code == "fr":
+        for code in recipes_one.translation_recipes:
+            print(code)
+            if code.lang.code == lang_code:
+                recipes_one.name = code.text
+        for code in recipes_one.category.translation_categories:
+            if code.lang.code == lang_code:    
+                recipes_one.category.name = code.text
         for mealtime in recipes_one.mealtime:
-            mealtime.name=mealtime.translation_mealtimes[0].text
+            for code in mealtime.translation_mealtimes:
+                if code.lang.code == lang_code: 
+                    mealtime.name=code.text
         for step in recipes_one.steps:
-            step.info=step.translation_steps[0].text
+            for code in step.translation_steps:
+                if code.lang.code == lang_code: 
+                    step.info=code.text
         for count in recipes_one.counts:
-            count.ingredient.name=count.ingredient.translation_ingredients[0].text
-            count.system_of_calc.name=count.system_of_calc.translation_sys_of_calcs[0].text
+            for code in count.ingredient.translation_ingredients:
+                if code.lang.code == lang_code: 
+                    count.ingredient.name=code.text
+            for code in count.system_of_calc.translation_sys_of_calcs:
+                if code.lang.code == lang_code: 
+                    count.system_of_calc.name=code.text
         return recipes_one
 
 #получение полного списка рецептов
