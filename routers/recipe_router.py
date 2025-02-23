@@ -35,32 +35,22 @@ def dizlikes_recipes(recipe,db:Session=Depends(get_db)):
     return dizlikes
 
 #функция добавления рецептам лайков и дизлайков
-def for_recipes(recipe_db,db:Session=Depends(get_db)):
+def for_recipes(recipe_db,lang_code, db:Session=Depends(get_db)):
     for recipe in recipe_db:
         recipe.likes=likes_recipes(recipe.id,db)
         recipe.dizlikes=dizlikes_recipes(recipe.id,db)
         recipe.raiting= recipe.likes * 2 - recipe.dizlikes
         if recipe.raiting < 0:
             recipe.raiting=0
+        recipes_translation(recipe,lang_code)
     return recipe_db
 
-
-#вывод одного рецепта
-@router.get("/{id}", response_model=pyd.RecipeScheme)
-async def get_recipes_one(lang_code:str, id:int, db:Session=Depends(get_db)):
-    recipes_one=db.query(models.Recipe).filter(models.Recipe.id==id).filter(models.Recipe.published==True).first()
-    if not recipes_one:
-        raise HTTPException(status_code=404, detail="Рецепт не найден!")
-    recipes_one.likes=likes_recipes(id,db)
-    recipes_one.dizlikes=dizlikes_recipes(id,db)
-    recipes_one.raiting= recipes_one.likes * 2 - recipes_one.dizlikes
-    if recipes_one.raiting < 0:
-        recipes_one.raiting=0
+#функция перевода рецептов
+def recipes_translation(recipes_one,lang_code):
     if lang_code == "ru" or lang_code == "" or lang_code == None:
         return recipes_one
     if lang_code == "en" or lang_code == "fr":
         for code in recipes_one.translation_recipes:
-            print(code)
             if code.lang.code == lang_code:
                 recipes_one.name = code.text
         for code in recipes_one.category.translation_categories:
@@ -83,9 +73,48 @@ async def get_recipes_one(lang_code:str, id:int, db:Session=Depends(get_db)):
                     count.system_of_calc.name=code.text
         return recipes_one
 
+
+#вывод одного рецепта
+@router.get("/{id}", response_model=pyd.RecipeScheme)
+async def get_recipes_one(lang_code:str, id:int, db:Session=Depends(get_db)):
+    recipes_one=db.query(models.Recipe).filter(models.Recipe.id==id).filter(models.Recipe.published==True).first()
+    if not recipes_one:
+        raise HTTPException(status_code=404, detail="Рецепт не найден!")
+    recipes_one.likes=likes_recipes(id,db)
+    recipes_one.dizlikes=dizlikes_recipes(id,db)
+    recipes_one.raiting= recipes_one.likes * 2 - recipes_one.dizlikes
+    return recipes_translation(recipes_one,lang_code)
+    # if recipes_one.raiting < 0:
+    #     recipes_one.raiting=0
+    # if lang_code == "ru" or lang_code == "" or lang_code == None:
+    #     return recipes_one
+    # if lang_code == "en" or lang_code == "fr":
+    #     for code in recipes_one.translation_recipes:
+    #         if code.lang.code == lang_code:
+    #             recipes_one.name = code.text
+    #     for code in recipes_one.category.translation_categories:
+    #         if code.lang.code == lang_code:    
+    #             recipes_one.category.name = code.text
+    #     for mealtime in recipes_one.mealtime:
+    #         for code in mealtime.translation_mealtimes:
+    #             if code.lang.code == lang_code: 
+    #                 mealtime.name=code.text
+    #     for step in recipes_one.steps:
+    #         for code in step.translation_steps:
+    #             if code.lang.code == lang_code: 
+    #                 step.info=code.text
+    #     for count in recipes_one.counts:
+    #         for code in count.ingredient.translation_ingredients:
+    #             if code.lang.code == lang_code: 
+    #                 count.ingredient.name=code.text
+    #         for code in count.system_of_calc.translation_sys_of_calcs:
+    #             if code.lang.code == lang_code: 
+    #                 count.system_of_calc.name=code.text
+    #     return recipes_one
+
 #получение полного списка рецептов
 @router.get('/', response_model=List[pyd.RecipeScheme])
-async def get_recipes(db:Session=Depends(get_db)):
+async def get_recipes(lang_code:str,db:Session=Depends(get_db)):
     query = (
         select(models.Recipe)
         .options(
@@ -94,40 +123,40 @@ async def get_recipes(db:Session=Depends(get_db)):
         ))
     res = db.execute(query)
     ress=res.scalars().all()
-    for_recipes(ress,db)
+    for_recipes(ress,lang_code,db)
     return ress
 
 #вывод топ-3 рецептов по рейтингу
 @router.get("/top/", response_model=List[pyd.RecipeScheme])
-async def get_recipes_top(db:Session=Depends(get_db)):
+async def get_recipes_top(lang_code:str,db:Session=Depends(get_db)):
     recipes_true=db.query(models.Recipe).filter(models.Recipe.published==True).all()
-    for_recipes(recipes_true,db)
+    for_recipes(recipes_true,lang_code,db)
     sorted_recipes = sorted(recipes_true, key=lambda x: x.raiting, reverse=True)
     return sorted_recipes[0],sorted_recipes[1],sorted_recipes[2]
 
 #читаем рецепты пагинацией
 @router.get("/page/all", response_model=Page[pyd.RecipeScheme])
-async def get_recipes_all(db:Session=Depends(get_db)):
+async def get_recipes_all(lang_code:str,db:Session=Depends(get_db)):
     recipes_db=db.query(models.Recipe).all()
-    for_recipes(recipes_db,db)
+    for_recipes(recipes_db,lang_code,db)
     return paginate(recipes_db)
 
 add_pagination(router)
 
 #вывод опубликованных рецептов с сортировкой
 @router.get("/page/true", response_model=Page[pyd.RecipeScheme]) 
-async def get_recipes_true(sort:str, db:Session=Depends(get_db)):
+async def get_recipes_true(sort:str, lang_code:str, db:Session=Depends(get_db)):
     if sort == "created_at":
         recipes_true=db.query(models.Recipe).filter(models.Recipe.published==True).order_by(models.Recipe.created_at.desc()).all()
-        for_recipes(recipes_true,db)
+        for_recipes(recipes_true,lang_code,db)
         return paginate(recipes_true)
     if sort == "cooking_time" : 
         recipes_true=db.query(models.Recipe).filter(models.Recipe.published==True).order_by(models.Recipe.cooking_time.asc()).all()
-        for_recipes(recipes_true,db)
+        for_recipes(recipes_true,lang_code,db)
         return paginate(recipes_true)
     if sort == "raiting":
         recipes_true=db.query(models.Recipe).filter(models.Recipe.published==True).all()
-        for_recipes(recipes_true,db)
+        for_recipes(recipes_true,lang_code,db)
         sorted_recipes = sorted(recipes_true, key=lambda x: x.raiting, reverse=True)
         return paginate(sorted_recipes)
     else:
@@ -137,7 +166,7 @@ add_pagination(router)
 
 #вывод опубликованных избранных рецептов с сортировкой
 @router.get("/page/true/favorite", response_model=Page[pyd.RecipeScheme]) 
-async def get_recipes_true_favorite(sort:str, db:Session=Depends(get_db),payload:dict=Depends(auth_utils.auth_wrapper)):
+async def get_recipes_true_favorite(sort:str, lang_code:str, db:Session=Depends(get_db),payload:dict=Depends(auth_utils.auth_wrapper)):
     user_db = db.query(models.User).filter(models.User.name==payload.get("username")).first() #получаем пользователя
     score_db=db.query(models.Score).filter(models.Score.id_user==user_db.id).filter(models.Score.like==True).all() #получаем лайки конкретного пользователя
     if sort == "created_at":
@@ -146,7 +175,7 @@ async def get_recipes_true_favorite(sort:str, db:Session=Depends(get_db),payload
             recipe_db=db.query(models.Recipe).filter(models.Recipe.published==True).filter(models.Recipe.id==score.id_recipe).order_by(models.Recipe.created_at.desc()).first()
             if recipe_db: 
                 recipes_true["items"].append(recipe_db)
-        for_recipes(recipes_true["items"],db)
+        for_recipes(recipes_true["items"],lang_code,db)
         return paginate(recipes_true["items"])
     if sort == "cooking_time" : 
         recipes_true={"items": []}
@@ -154,7 +183,7 @@ async def get_recipes_true_favorite(sort:str, db:Session=Depends(get_db),payload
             recipe_db=db.query(models.Recipe).filter(models.Recipe.published==True).filter(models.Recipe.id==score.id_recipe).order_by(models.Recipe.cooking_time.asc()).first()
             if recipe_db: 
                 recipes_true["items"].append(recipe_db)
-        for_recipes(recipes_true["items"],db)
+        for_recipes(recipes_true["items"],lang_code,db)
         return paginate(recipes_true["items"])
     if sort == "raiting":
         recipes_true={"items": []}
@@ -162,7 +191,7 @@ async def get_recipes_true_favorite(sort:str, db:Session=Depends(get_db),payload
             recipe_db=db.query(models.Recipe).filter(models.Recipe.published==True).filter(models.Recipe.id==score.id_recipe).first()
             if recipe_db: 
                 recipes_true["items"].append(recipe_db)
-        for_recipes(recipes_true["items"],db)
+        for_recipes(recipes_true["items"],lang_code,db)
         sorted_recipes = sorted(recipes_true["items"], key=lambda x: x.raiting, reverse=True)
         return paginate(sorted_recipes)
     else:
@@ -172,10 +201,10 @@ add_pagination(router)
 
 #вывод неопубликованных рецептов
 @router.get("/page/false", response_model=Page[pyd.RecipeScheme]) #только админ
-async def get_recipes_false(db:Session=Depends(get_db), payload:dict=Depends(auth_utils.auth_wrapper)):
+async def get_recipes_false(lang_code:str,db:Session=Depends(get_db), payload:dict=Depends(auth_utils.auth_wrapper)):
     if payload.get("username") == "edok228":
         recipes_false=db.query(models.Recipe).filter(models.Recipe.published==False).all()
-        for_recipes(recipes_false,db)
+        for_recipes(recipes_false,lang_code,db)
         return paginate(recipes_false)
     else:
         raise HTTPException(status_code=404, detail="Вы не администратор!")
@@ -184,14 +213,14 @@ add_pagination(router)
 
 #вывод опубликованных рецептов по категории и времени употребления через query
 @router.get("/page/true/category/", response_model=Page[pyd.RecipeScheme]) 
-async def get_recipes_true_category(name: str, sort: str, db:Session=Depends(get_db)):
+async def get_recipes_true_category(name: str, sort: str, lang_code:str, db:Session=Depends(get_db)):
     category_db=db.query(models.Category).filter(models.Category.name==name).first()
     if not category_db:
         mealtime_db=db.query(models.Mealtime).filter(models.Mealtime.name==name).first()
         if not mealtime_db:
             raise HTTPException(status_code=404, detail="Категория не найдена!")
         mealtime_recipes_true=db.query(models.Recipe).filter(models.Recipe.published==True).filter(models.Recipe.mealtime.contains(mealtime_db)).all()
-        for_recipes(mealtime_recipes_true,db)
+        for_recipes(mealtime_recipes_true,lang_code,db)
         if sort == "created_at":
             sorted_recipes = sorted(mealtime_recipes_true, key=lambda x: x.created_at, reverse=True)
             return paginate(sorted_recipes)
@@ -203,7 +232,7 @@ async def get_recipes_true_category(name: str, sort: str, db:Session=Depends(get
             return paginate(sorted_recipes)
         return paginate(mealtime_recipes_true)
     category_recipes_true=db.query(models.Recipe).filter(models.Recipe.published==True).filter(models.Recipe.category==category_db).all()
-    for_recipes(category_recipes_true,db)
+    for_recipes(category_recipes_true,lang_code,db)
     if sort == "created_at":
         sorted_recipes = sorted(category_recipes_true, key=lambda x: x.created_at, reverse=True)
         return paginate(sorted_recipes)
@@ -219,20 +248,20 @@ add_pagination(router)
 
 #вывод опубликованных рецептов по названию рецепта через query
 @router.get("/page/true/search/", response_model=Page[pyd.RecipeScheme])
-async def get_recipes_true_search(name: str, db:Session=Depends(get_db)):
+async def get_recipes_true_search(name: str, lang_code:str,db:Session=Depends(get_db)):
     name = name.lower()
     recipes_first=db.query(models.Recipe).filter(models.Recipe.published==True).filter(models.Recipe.name.contains(name)).order_by(models.Recipe.name.asc()).all()
     name = name[0].upper() + name[1:]
     recipes_second=db.query(models.Recipe).filter(models.Recipe.published==True).filter(models.Recipe.name.contains(name)).order_by(models.Recipe.name.asc()).all()
     recipes = recipes_second+recipes_first
-    for_recipes(recipes,db)
+    for_recipes(recipes,lang_code,db)
     return paginate(recipes)
 
 add_pagination(router)
 
 #вывод опубликованных рецептов по названию рецепта через query с категорией
 @router.get("/page/true/search/category", response_model=Page[pyd.RecipeScheme])
-async def get_recipes_true_search_category(name: str, cat: str, db:Session=Depends(get_db)):
+async def get_recipes_true_search_category(name: str, cat: str, lang_code:str, db:Session=Depends(get_db)):
     name = name.lower()
     category_db=db.query(models.Category).filter(models.Category.name==cat).first()
     if not category_db:
@@ -245,7 +274,7 @@ async def get_recipes_true_search_category(name: str, cat: str, db:Session=Depen
         name = name[0].upper() + name[1:]
         recipes_second=db.query(models.Recipe).filter(models.Recipe.published==True).filter(models.Recipe.mealtime.contains(mealtime_db)).filter(models.Recipe.name.contains(name)).order_by(models.Recipe.name.asc()).all()
         recipes = recipes_second+mealtime_recipes_true
-        for_recipes(recipes,db)
+        for_recipes(recipes,lang_code,db)
         return paginate(recipes)
     #категория
     category_recipes_true=db.query(models.Recipe).filter(models.Recipe.published==True).filter(models.Recipe.category==category_db).filter(models.Recipe.name.contains(name)).order_by(models.Recipe.name.asc()).all()
@@ -253,20 +282,20 @@ async def get_recipes_true_search_category(name: str, cat: str, db:Session=Depen
     name = name[0].upper() + name[1:]
     recipes_second=db.query(models.Recipe).filter(models.Recipe.published==True).filter(models.Recipe.category==category_db).filter(models.Recipe.name.contains(name)).order_by(models.Recipe.name.asc()).all()
     recipes = recipes_second+category_recipes_true
-    for_recipes(recipes,db)
+    for_recipes(recipes,lang_code,db)
     return paginate(recipes)
 
 add_pagination(router)
 
 #вывод опубликованных рецептов по названию рецепта через query с сортировкой
 @router.get("/page/true/search/sort", response_model=Page[pyd.RecipeScheme])
-async def get_recipes_true_search_sort(name: str, sort: str, db:Session=Depends(get_db)):
+async def get_recipes_true_search_sort(name: str, sort: str, lang_code:str, db:Session=Depends(get_db)):
     name = name.lower()
     recipes_first=db.query(models.Recipe).filter(models.Recipe.published==True).filter(models.Recipe.name.contains(name)).order_by(models.Recipe.name.asc()).all()
     name = name[0].upper() + name[1:]
     recipes_second=db.query(models.Recipe).filter(models.Recipe.published==True).filter(models.Recipe.name.contains(name)).order_by(models.Recipe.name.asc()).all()
     recipes = recipes_second+recipes_first
-    for_recipes(recipes,db)
+    for_recipes(recipes,lang_code,db)
     if sort == "created_at":
         sorted_recipes = sorted(recipes, key=lambda x: x.created_at, reverse=True)
         return paginate(sorted_recipes)
@@ -282,7 +311,7 @@ add_pagination(router)
 
 #вывод опубликованных рецептов по названию рецепта через query с сортировкой и с категорией
 @router.get("/page/true/search/sort/category", response_model=Page[pyd.RecipeScheme])
-async def get_recipes_true_search_sort_category(name: str, cat:str, sort: str, db:Session=Depends(get_db)):
+async def get_recipes_true_search_sort_category(name: str, cat:str, sort: str, lang_code:str, db:Session=Depends(get_db)):
     name = name.lower()
     category_db=db.query(models.Category).filter(models.Category.name==cat).first()
     if not category_db:
@@ -295,7 +324,7 @@ async def get_recipes_true_search_sort_category(name: str, cat:str, sort: str, d
         name = name[0].upper() + name[1:]
         recipes_second=db.query(models.Recipe).filter(models.Recipe.published==True).filter(models.Recipe.mealtime.contains(mealtime_db)).filter(models.Recipe.name.contains(name)).order_by(models.Recipe.name.asc()).all()
         recipes = recipes_second+mealtime_recipes_true
-        for_recipes(recipes,db)
+        for_recipes(recipes,lang_code,db)
         if sort == "created_at":
             sorted_recipes = sorted(recipes, key=lambda x: x.created_at, reverse=True)
             return paginate(sorted_recipes)
@@ -312,7 +341,7 @@ async def get_recipes_true_search_sort_category(name: str, cat:str, sort: str, d
     name = name[0].upper() + name[1:]
     recipes_second=db.query(models.Recipe).filter(models.Recipe.published==True).filter(models.Recipe.category==category_db).filter(models.Recipe.name.contains(name)).order_by(models.Recipe.name.asc()).all()
     recipes = recipes_second+category_recipes_true
-    for_recipes(recipes,db)
+    for_recipes(recipes,lang_code,db)
     if sort == "created_at":
         sorted_recipes = sorted(recipes, key=lambda x: x.created_at, reverse=True)
         return paginate(sorted_recipes)
