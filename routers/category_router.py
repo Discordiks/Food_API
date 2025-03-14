@@ -14,10 +14,17 @@ router = APIRouter(
 )
 
 #получение списка категорий
-@router.get('/', response_model=List[pyd.CategoryBase])
-async def get_categorys(db:Session=Depends(get_db)):
+@router.get('/', response_model=List[pyd.CategoryScheme])
+async def get_categorys(lang_code:str,db:Session=Depends(get_db)):
     categorys=db.query(models.Category).all()
-    return categorys
+    if lang_code == "ru" or lang_code == "" or lang_code == None:
+        return categorys
+    if lang_code == "en" or lang_code == "fr":
+        for category in categorys:
+            for code in category.translation_categories:
+                if code.lang.code == lang_code:
+                    category.name = code.text
+        return categorys
 
 #добавление категории
 @router.post('/', response_model=pyd.CategoryBase)
