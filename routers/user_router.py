@@ -20,6 +20,9 @@ from config import TokenInfo
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials, OAuth2PasswordBearer 
 #модуль для указания ошибки токена
 from jwt.exceptions import InvalidTokenError
+#модули для инициализации Firebase
+import firebase_admin
+from firebase_admin import credentials, initialize_app, messaging
 
 router = APIRouter(
     prefix="/user",
@@ -94,7 +97,7 @@ async def get_users_top(db:Session=Depends(get_db)):
     return sorted_users[0],sorted_users[1],sorted_users[2]
 
 #добавление пользователя (регистрация)
-@router.post('/reg', response_model=pyd.UserScheme)
+@router.post('/reg')
 async def reg_user(user_input:pyd.UserCreate, db: Session = Depends(get_db)):
     user_db=db.query(models.User).filter(models.User.mail==user_input.mail).first()
     user_db_2=db.query(models.User).filter(models.User.name==user_input.name).first()
@@ -111,11 +114,26 @@ async def reg_user(user_input:pyd.UserCreate, db: Session = Depends(get_db)):
     email_verify_token=randomword(25)
     email_verify_token+=str(user_db.id)
     user_db.email_verify_code=email_verify_token
+    user_db.token_phone=user_input.token_phone
     db.commit()
     # send_email_message(user_db.mail,'Проверочное письмо для едыыыы',
     #                    f'<h1>Время кушать</h1><a href="http://127.0.0.1:8000/user/verify/?code={email_verify_token}">Время найти еду</a>')
     raiting_recipes(user_db,db)
-    return user_db
+    try:
+        #отправка уведомления об успешной регистрации!
+        message = messaging.Message(
+            notification=messaging.Notification(
+                title="Привет, "+user_input.name,
+                body="Вы успешно зарегестрировались в нашем приложениии! Вкусного Вам путешествия!"
+            ),
+            token=user_input.token_phone,
+        )
+        response = messaging.send(message)
+        return {"message": "Уведомление отправлено успешно", "response": response}
+    except Exception as e:
+        print(f"Ошибка отправки пуша: {e}")
+        raise HTTPException(status_code=500, detail=f"Ошибка отправки пуша: {e}")
+    
 
 #редактирование фото пользователя
 @router.put('/my_profile_img', response_model=pyd.UserEditingImg)
