@@ -5,6 +5,15 @@ from routers import category_router, ingredient_router, mealtime_router, recipe_
 #модули для связи бэка с фронтом
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
+#модули для инициализации Firebase
+import firebase_admin
+from firebase_admin import credentials, initialize_app, messaging
+
+try:
+    cred = credentials.Certificate("certs/AccountKey.json") 
+    default_app = initialize_app(cred)
+except Exception as e:
+    print(f"Ошибка Firebase: {e}")
 
 app = FastAPI()
 

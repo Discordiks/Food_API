@@ -16,6 +16,9 @@ from config import TokenInfo
 #модули для пагинации
 from fastapi_pagination import Page, LimitOffsetPage, paginate, add_pagination, limit_offset
 from fastapi_pagination.utils import disable_installed_extensions_check
+#модули для инициализации Firebase
+import firebase_admin
+from firebase_admin import credentials, initialize_app, messaging
 
 router = APIRouter(
     prefix="/recipe",
@@ -530,3 +533,22 @@ async def published_recipes(recipe_id:int, db:Session=Depends(get_db),payload:di
         return "Рецепт успешно опубликован!"
     else:
         raise HTTPException(status_code=404, detail="Вы не администратор!")
+    
+@router.post("/send_notification")
+async def send_notification(notification: pyd.PushNotification):
+    try:
+        message = messaging.Message(
+            notification=messaging.Notification(
+                title=notification.title,
+                body=notification.body
+            ),
+            token=notification.token,
+        )
+
+        response = messaging.send(message)
+        print('Ответ:', response)
+        return {"message": "Уведомление отправлено успешно", "response": response}
+
+    except Exception as e:
+        print(f"Ошибка отправки пуша: {e}")
+        raise HTTPException(status_code=500, detail=f"Ошибка отправки пуша: {e}")

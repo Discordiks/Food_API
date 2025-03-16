@@ -5,6 +5,7 @@ class UserCreate(BaseModel):
     name:str=Field(...,max_length=255, min_length=1,example="Jin")
     mail:EmailStr = Field(...,example="recipes228@mail.ru")
     password:str=Field(...,max_length=255, min_length=6,example="fafal1")
+    token_phone:str=Field(...,example="tokenstr")
 
 class UserEditingImg(BaseModel): #класс для редактирования фото пользователя
     img_avatar:str=Field(...,example="files/hh.png")

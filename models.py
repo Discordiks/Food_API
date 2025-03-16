@@ -27,6 +27,7 @@ class User(Base): #пользователи
     email_verify=Column(Boolean(),nullable=False,
                         default=False)
     email_verify_code=Column(String(255), nullable=True, unique=True)
+    token_phone=Column(String(255), nullable=True) #на деле должен быть уникальным
 
 class Recipe(Base): #рецепты
     __tablename__ = "recipes"
