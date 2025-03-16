@@ -124,7 +124,7 @@ async def reg_user(user_input:pyd.UserCreate, db: Session = Depends(get_db)):
         message = messaging.Message(
             notification=messaging.Notification(
                 title="Привет, "+user_input.name,
-                body="Вы успешно зарегестрировались в нашем приложениии! Вкусного Вам путешествия!"
+                body="Вы успешно зарегистрировались в нашем приложениии! Вкусного Вам путешествия!"
             ),
             token=user_input.token_phone,
         )
@@ -132,7 +132,7 @@ async def reg_user(user_input:pyd.UserCreate, db: Session = Depends(get_db)):
         return {"message": "Уведомление отправлено успешно", "response": response}
     except Exception as e:
         print(f"Ошибка отправки пуша: {e}")
-        raise HTTPException(status_code=500, detail=f"Ошибка отправки пуша: {e}")
+        return user_db
     
 
 #редактирование фото пользователя

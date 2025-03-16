@@ -9,7 +9,6 @@ class UserBase(BaseModel):
     mailing:bool=Field(...,example=False)
     created_at:datetime=Field(...,example='2001-01-01 00:00:00')
     email_verify:bool=Field(...)
-    token_phone:str=Field(...,example="tokenstr")
     class Config:
         orm_mode=True #наша модель будет легко соедняться с бд
 
