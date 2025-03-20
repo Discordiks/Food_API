@@ -1,6 +1,7 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import EmailStr, BaseModel
 from pathlib import Path
+import json
 
 BASE_DIR= Path(__file__).parent
 
@@ -24,8 +25,21 @@ class Settings(BaseSettings):
     EMAIL_PWD:str
 
     model_config = SettingsConfigDict(env_file=".env")
-
+    token_phone_path:Path = BASE_DIR / "certs" / "AccountKey.json"
+    firebase_credentials: dict = {}
     auth_jwt:AuthJWT = AuthJWT()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        try:
+            with open(self.token_phone_path, "r") as f:
+                self.firebase_credentials = json.load(f)
+        except FileNotFoundError:
+            print(f"Ошибка: Файл {self.token_phone_path} не найден.")
+            self.firebase_credentials = {}
+        except json.JSONDecodeError:
+            print(f"Ошибка: Некорректный JSON в файле {self.token_phone_path}.")
+            self.firebase_credentials = {}
 
 settings = Settings()
 

@@ -1,23 +1,24 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, FastAPI, Request, status
+from routers import category_router, ingredient_router, mealtime_router, recipe_router, count_router, step_router, sys_of_calc_router, user_router, photo_router, score_router
 from sqlalchemy.orm import Session
 from typing import List
-from routers import category_router, ingredient_router, mealtime_router, recipe_router, count_router, step_router, sys_of_calc_router, user_router, photo_router, score_router
 #модули для связи бэка с фронтом
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, JSONResponse
+from fastapi.exceptions import RequestValidationError
 #модули для инициализации Firebase
+import os
 import firebase_admin
-from firebase_admin import credentials, initialize_app, messaging
+from firebase_admin import credentials, messaging
+from config import settings
 
-try:
-    cred = credentials.Certificate("certs/AccountKey.json") 
-    default_app = initialize_app(cred)
-except Exception as e:
-    print(f"Ошибка Firebase: {e}")
+if not firebase_admin._apps:
+    cred = credentials.Certificate(settings.firebase_credentials)
+    firebase_admin.initialize_app(cred)
 
 app = FastAPI()
 
-# подключение АпиРоутера (маршруты сущности)
+#подключение АпиРоутера (маршруты сущности)
 app.include_router(user_router)
 app.include_router(recipe_router)
 app.include_router(count_router)
