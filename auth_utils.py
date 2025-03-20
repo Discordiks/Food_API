@@ -68,7 +68,7 @@ def decode_jwt(
     except jwt.InvalidTokenError as e:
         raise HTTPException(401, 'Плохой токен')
 
-# мидлваре для защиты маршрутов
+#мидлваре для защиты маршрутов
 def auth_wrapper(auth: HTTPAuthorizationCredentials = Security(security)):
     token = auth.credentials
     try:

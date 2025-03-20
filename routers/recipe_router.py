@@ -24,6 +24,7 @@ router = APIRouter(
     prefix="/recipe",
     tags=["recipe"],
 )
+disable_installed_extensions_check()
 
 #функция подсчёта лайков
 def likes_recipes(recipe,db:Session=Depends(get_db)):
