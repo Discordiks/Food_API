@@ -119,7 +119,10 @@ async def reg_user(user_input:pyd.UserCreate, db: Session = Depends(get_db)):
     email_verify_token=randomword(25)
     email_verify_token+=str(user_db.id)
     user_db.email_verify_code=email_verify_token
-    user_db.token_phone=user_input.token_phone
+    if user_input.token_phone == None:
+        user_db.token_phone=None
+    else:
+        user_db.token_phone=user_input.token_phone
     db.add(user_db)
     db.commit()
     # send_email_message(user_db.mail,'Проверочное письмо для едыыыы',
@@ -148,11 +151,15 @@ async def reg_user(user_input:pyd.UserCreate, db: Session = Depends(get_db)):
 def auth_user_issue_jwt(cred: pyd.Credentials, db:Session=Depends(get_db)):
     cred_db=db.query(models.User).filter(models.User.mail==cred.mail).first()
     if not cred_db:
-        return('Пользователь не найден!')
-        #raise HTTPException(404, 'Пользователь не найден!')
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=[{"loc": ["email"], "msg": "Пользователь не найден!", "type": "user"}]
+            )
     if not auth_utils.verify_password(cred.pwd, cred_db.password):
-        return('Не верный логин или пароль!')
-        #raise HTTPException(403, 'Не верный логин или пароль')
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=[{"loc": ["email"], "msg": "Неверный логин или пароль", "type": "no_password"}]
+            )
     jwt_payload = {
         #кому это принадлежит
         "sub": cred_db.name,
