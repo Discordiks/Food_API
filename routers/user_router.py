@@ -125,8 +125,8 @@ async def reg_user(user_input:pyd.UserCreate, db: Session = Depends(get_db)):
         user_db.token_phone=user_input.token_phone
     db.add(user_db)
     db.commit()
-    # send_email_message(user_db.mail,'Проверочное письмо для едыыыы',
-    #                    f'<h1>Время кушать</h1><a href="http://127.0.0.1:8000/user/verify/?code={email_verify_token}">Время найти еду</a>')
+    send_email_message(user_db.mail,'Подтверждение почты "Edok.ru"',
+                       f'<h1>Добро пожаловать!</h1><p>Вы успешно прошли регистрацию! Перейдите по ссылке, чтобы подтвердить свою почту.</p><a href="http://127.0.0.1:8000/user/verify/?code={email_verify_token}">Время найти еду!</a>')
     raiting_recipes(user_db,db)
     #отправка пуша
     try:
